@@ -1,7 +1,7 @@
-import { GardenPlanner } from '../components/GardenPlanner';
+import { GardenManager } from '../components/GardenManager';
 
 const Index = () => {
-  return <GardenPlanner />;
+  return <GardenManager />;
 };
 
 export default Index;

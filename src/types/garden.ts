@@ -19,3 +19,10 @@ export interface GardenPlot {
   height: number;
   plants: PlantedCell[];
 }
+
+export interface Garden {
+  id: string;
+  name: string;
+  plot: GardenPlot;
+  createdAt: Date;
+}
