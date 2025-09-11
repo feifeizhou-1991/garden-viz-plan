@@ -47,6 +47,23 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Garden-specific colors
+        garden: {
+          soil: "hsl(var(--garden-soil))",
+          grass: "hsl(var(--garden-grass))",
+          path: "hsl(var(--garden-path))",
+        },
+        plant: {
+          leafy: "hsl(var(--plant-leafy))",
+          fruit: "hsl(var(--plant-fruit))",
+          root: "hsl(var(--plant-root))",
+          herb: "hsl(var(--plant-herb))",
+        },
+        grid: {
+          line: "hsl(var(--grid-line))",
+          hover: "hsl(var(--plot-hover))",
+          occupied: "hsl(var(--plot-occupied))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
