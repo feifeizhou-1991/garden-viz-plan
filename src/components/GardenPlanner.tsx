@@ -3,9 +3,11 @@ import { Plant, PlantedCell, Garden } from '../types/garden';
 import { GardenGrid } from './GardenGrid';
 import { PlantSelector } from './PlantSelector';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Separator } from './ui/separator';
-import { Trash2, Download, RotateCcw } from 'lucide-react';
+import { Trash2, Download, RotateCcw, Grid3x3 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface GardenPlannerProps {
@@ -16,23 +18,53 @@ interface GardenPlannerProps {
 export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGarden }) => {
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [plants, setPlants] = useState<PlantedCell[]>(garden.plot.plants);
-  const gridSize = { width: garden.plot.width, height: garden.plot.height };
+  const [gridSize, setGridSize] = useState({ width: garden.plot.width, height: garden.plot.height });
+  const [editingGrid, setEditingGrid] = useState(false);
 
-  // Update local plants when garden changes
+  // Update local state when garden changes
   useEffect(() => {
     setPlants(garden.plot.plants);
-  }, [garden.plot.plants]);
+    setGridSize({ width: garden.plot.width, height: garden.plot.height });
+  }, [garden.plot.plants, garden.plot.width, garden.plot.height]);
 
-  const updateGardenPlants = useCallback((newPlants: PlantedCell[]) => {
-    setPlants(newPlants);
-    onUpdateGarden({
+  const updateGarden = useCallback((newPlants: PlantedCell[], newWidth?: number, newHeight?: number) => {
+    const updatedGarden = {
       ...garden,
       plot: {
         ...garden.plot,
+        width: newWidth ?? gridSize.width,
+        height: newHeight ?? gridSize.height,
         plants: newPlants
       }
-    });
-  }, [garden, onUpdateGarden]);
+    };
+    onUpdateGarden(updatedGarden);
+  }, [garden, onUpdateGarden, gridSize]);
+
+  const updateGardenPlants = useCallback((newPlants: PlantedCell[]) => {
+    setPlants(newPlants);
+    updateGarden(newPlants);
+  }, [updateGarden]);
+
+  const handleGridSizeChange = useCallback((newWidth: number, newHeight: number) => {
+    // Filter out plants that would be outside the new grid bounds
+    const validPlants = plants.filter(p => p.x < newWidth && p.y < newHeight);
+    const removedCount = plants.length - validPlants.length;
+    
+    setGridSize({ width: newWidth, height: newHeight });
+    setPlants(validPlants);
+    updateGarden(validPlants, newWidth, newHeight);
+    setEditingGrid(false);
+    
+    if (removedCount > 0) {
+      toast.warning(`Removed ${removedCount} plant${removedCount > 1 ? 's' : ''} that were outside the new grid size`);
+    }
+    toast.success(`Grid resized to ${newWidth}×${newHeight}`);
+  }, [plants, updateGarden]);
+
+  const cancelGridEdit = useCallback(() => {
+    setGridSize({ width: garden.plot.width, height: garden.plot.height });
+    setEditingGrid(false);
+  }, [garden.plot.width, garden.plot.height]);
 
   const handlePlantCell = useCallback((x: number, y: number, plant: Plant) => {
     const newPlants = plants.filter(p => !(p.x === x && p.y === y));
@@ -107,7 +139,64 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
     <Card>
       <CardHeader>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <CardTitle className="text-xl">{garden.name} ({gridSize.width} × {gridSize.height})</CardTitle>
+          <div className="flex items-center gap-4">
+            <CardTitle className="text-xl">{garden.name}</CardTitle>
+            {!editingGrid ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">({gridSize.width} × {gridSize.height})</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingGrid(true)}
+                  className="flex items-center gap-1"
+                >
+                  <Grid3x3 className="w-3 h-3" />
+                  Edit Size
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <Label htmlFor="grid-width" className="text-xs">W:</Label>
+                  <Input
+                    id="grid-width"
+                    type="number"
+                    min="3"
+                    max="20"
+                    value={gridSize.width}
+                    onChange={(e) => setGridSize(prev => ({ ...prev, width: parseInt(e.target.value) || 3 }))}
+                    className="w-16 h-8"
+                  />
+                </div>
+                <div className="flex items-center gap-1">
+                  <Label htmlFor="grid-height" className="text-xs">H:</Label>
+                  <Input
+                    id="grid-height"
+                    type="number"
+                    min="3"
+                    max="20"
+                    value={gridSize.height}
+                    onChange={(e) => setGridSize(prev => ({ ...prev, height: parseInt(e.target.value) || 3 }))}
+                    className="w-16 h-8"
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => handleGridSizeChange(gridSize.width, gridSize.height)}
+                  disabled={gridSize.width === garden.plot.width && gridSize.height === garden.plot.height}
+                >
+                  Apply
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={cancelGridEdit}
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
+          </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
