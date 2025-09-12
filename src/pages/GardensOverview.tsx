@@ -33,7 +33,12 @@ const getStoredGardens = (): Garden[] => {
 };
 
 const GardensOverview: React.FC = () => {
-  const [gardens, setGardens] = useState<Garden[]>(getStoredGardens);
+  const [gardens, setGardens] = useState<Garden[]>(() => {
+    const stored = getStoredGardens();
+    // Ensure gardens are always saved to localStorage
+    localStorage.setItem('gardens', JSON.stringify(stored));
+    return stored;
+  });
   const [newGardenName, setNewGardenName] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingGarden, setEditingGarden] = useState<Garden | null>(null);

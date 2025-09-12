@@ -26,14 +26,19 @@ const GardenDetail: React.FC = () => {
 
   useEffect(() => {
     const gardens = getStoredGardens();
+    console.log('Available gardens:', gardens);
+    console.log('Looking for garden with id:', id);
+    
     const foundGarden = gardens.find(g => g.id === id);
     
     if (!foundGarden) {
+      console.error('Garden not found with id:', id);
       toast.error('Garden not found');
       navigate('/');
       return;
     }
     
+    console.log('Found garden:', foundGarden);
     setGarden(foundGarden);
   }, [id, navigate]);
 
