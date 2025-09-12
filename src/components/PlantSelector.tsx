@@ -23,16 +23,28 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
     }
   };
 
+  const handleDragStart = (e: React.DragEvent, plant: Plant) => {
+    e.dataTransfer.setData('application/json', JSON.stringify({
+      type: 'new-plant',
+      plant
+    }));
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
   return (
     <div className="w-full max-w-4xl">
       <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
         🌱 Plant Selection
+        <span className="text-sm text-muted-foreground font-normal">
+          (Click to select or drag to plant)
+        </span>
       </h3>
       
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
         {PLANTS.map((plant) => (
           <Card
             key={plant.id}
+            draggable
             className={cn(
               "p-4 cursor-pointer transition-all duration-200 hover:shadow-md border-l-4",
               selectedPlant?.id === plant.id 
@@ -41,6 +53,7 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
               getTypeColor(plant.type)
             )}
             onClick={() => onSelectPlant(selectedPlant?.id === plant.id ? null : plant)}
+            onDragStart={(e) => handleDragStart(e, plant)}
           >
             <div className="text-center space-y-2">
               <div className="text-3xl">{plant.icon}</div>

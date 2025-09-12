@@ -51,6 +51,19 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
     updateGardenPlants(newPlants);
   }, [plants, updateGardenPlants]);
 
+  const handleMovePlant = useCallback((fromX: number, fromY: number, toX: number, toY: number) => {
+    const plantToMove = plants.find(p => p.x === fromX && p.y === fromY);
+    if (!plantToMove) return;
+
+    const newPlants = plants.map(p => 
+      p.x === fromX && p.y === fromY 
+        ? { ...p, x: toX, y: toY }
+        : p
+    );
+    updateGardenPlants(newPlants);
+    toast.success(`Moved ${plantToMove.plant.name} to (${toX + 1}, ${toY + 1})`);
+  }, [plants, updateGardenPlants]);
+
   const clearGarden = useCallback(() => {
     updateGardenPlants([]);
     setSelectedPlant(null);
@@ -135,6 +148,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
               plants={plants}
               onPlantCell={handlePlantCell}
               onRemoveCell={handleRemoveCell}
+              onMovePlant={handleMovePlant}
             />
           </div>
           
@@ -171,7 +185,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
               
               {plants.length === 0 && (
                 <div className="text-center text-sm text-muted-foreground py-4">
-                  Select a plant above and click on the grid to start planning!
+                  Select a plant above and click on the grid to start planning, or drag plants directly onto the grid!
                 </div>
               )}
             </CardContent>
