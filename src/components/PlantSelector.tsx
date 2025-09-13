@@ -32,15 +32,15 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
   };
 
   return (
-    <div className="w-full max-w-4xl">
+    <div className="w-full">
       <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
         🌱 Plant Selection
-        <span className="text-sm text-muted-foreground font-normal">
-          (Click to select or drag to plant)
-        </span>
       </h3>
+      <p className="text-sm text-muted-foreground mb-4">
+        Click to select or drag to plant
+      </p>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         {PLANTS.map((plant) => (
           <Card
             key={plant.id}

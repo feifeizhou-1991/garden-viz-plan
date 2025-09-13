@@ -219,66 +219,77 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Plant Selector */}
-        <PlantSelector
-          selectedPlant={selectedPlant}
-          onSelectPlant={setSelectedPlant}
-        />
-        
-        <Separator />
-        
-        {/* Garden Grid */}
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          <div className="flex-1 flex justify-center">
-            <GardenGrid
-              width={gridSize.width}
-              height={gridSize.height}
-              selectedPlant={selectedPlant}
-              plants={plants}
-              onPlantCell={handlePlantCell}
-              onRemoveCell={handleRemoveCell}
-              onMovePlant={handleMovePlant}
-            />
+        {/* Full Width Garden Layout */}
+        <div className="flex flex-col lg:flex-row gap-8 h-full">
+          {/* Garden Grid - Left Side */}
+          <div className="flex-1 flex flex-col">
+            <div className="flex justify-center">
+              <GardenGrid
+                width={gridSize.width}
+                height={gridSize.height}
+                selectedPlant={selectedPlant}
+                plants={plants}
+                onPlantCell={handlePlantCell}
+                onRemoveCell={handleRemoveCell}
+                onMovePlant={handleMovePlant}
+              />
+            </div>
+            
+            {/* Stats Below Grid */}
+            <Card className="mt-6">
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-primary">{plants.length}</div>
+                    <div className="text-sm text-muted-foreground">Total Plants</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-primary">
+                      {((plants.length / (gridSize.width * gridSize.height)) * 100).toFixed(0)}%
+                    </div>
+                    <div className="text-sm text-muted-foreground">Grid Usage</div>
+                  </div>
+                  {Object.entries(typeCounts).slice(0, 2).map(([type, count]) => (
+                    <div key={type}>
+                      <div className="text-2xl font-bold text-primary">{count}</div>
+                      <div className="text-sm text-muted-foreground capitalize">{type}</div>
+                    </div>
+                  ))}
+                </div>
+                
+                {Object.keys(typeCounts).length > 2 && (
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex flex-wrap gap-4 justify-center">
+                      {Object.entries(typeCounts).slice(2).map(([type, count]) => (
+                        <div key={type} className="text-sm">
+                          <span className="capitalize text-muted-foreground">{type}:</span>
+                          <span className="ml-1 font-medium">{count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
           
-          {/* Stats Panel */}
-          <Card className="w-full lg:w-80">
-            <CardHeader>
-              <CardTitle className="text-lg">Garden Statistics</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Total Plants:</span>
-                  <span className="font-medium">{plants.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Grid Usage:</span>
-                  <span className="font-medium">
-                    {((plants.length / (gridSize.width * gridSize.height)) * 100).toFixed(1)}%
-                  </span>
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm">Plant Types:</h4>
-                {Object.entries(typeCounts).map(([type, count]) => (
-                  <div key={type} className="flex justify-between text-sm">
-                    <span className="capitalize text-muted-foreground">{type}:</span>
-                    <span>{count}</span>
+          {/* Plant Selector - Right Side */}
+          <div className="w-full lg:w-80 xl:w-96">
+            <PlantSelector
+              selectedPlant={selectedPlant}
+              onSelectPlant={setSelectedPlant}
+            />
+            
+            {plants.length === 0 && (
+              <Card className="mt-4">
+                <CardContent className="pt-6">
+                  <div className="text-center text-sm text-muted-foreground">
+                    Select a plant and click on the grid to start planning, or drag plants directly onto the grid!
                   </div>
-                ))}
-              </div>
-              
-              {plants.length === 0 && (
-                <div className="text-center text-sm text-muted-foreground py-4">
-                  Select a plant above and click on the grid to start planning, or drag plants directly onto the grid!
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

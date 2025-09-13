@@ -114,7 +114,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
           <div
             key={`${x}-${y}`}
             className={cn(
-              "aspect-square border border-grid-line bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-2xl relative",
+              "w-16 h-16 border border-grid-line bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
               isHovered && !plantedCell && "bg-grid-hover",
               plantedCell && "bg-grid-occupied",
               selectedPlant && !plantedCell && "hover:bg-grid-hover",
@@ -155,10 +155,10 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
 
   return (
     <div 
-      className="inline-grid gap-1 p-6 bg-muted rounded-xl border-2 border-border shadow-lg"
+      className="inline-grid gap-2 p-8 bg-muted rounded-xl border-2 border-border shadow-lg"
       style={{ 
-        gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))`,
-        gridTemplateRows: `repeat(${height}, minmax(0, 1fr))`
+        gridTemplateColumns: `repeat(${width}, minmax(60px, 1fr))`,
+        gridTemplateRows: `repeat(${height}, minmax(60px, 1fr))`
       }}
     >
       {renderGrid()}
