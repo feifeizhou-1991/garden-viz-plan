@@ -14,6 +14,16 @@ export interface PlantedCell {
   plant: Plant;
 }
 
+export interface GardenBed {
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  plants: PlantedCell[];
+  x: number; // position in garden layout
+  y: number; // position in garden layout
+}
+
 export interface GardenPlot {
   width: number;
   height: number;
@@ -23,6 +33,7 @@ export interface GardenPlot {
 export interface Garden {
   id: string;
   name: string;
-  plot: GardenPlot;
+  plot: GardenPlot; // Keep for backward compatibility
+  beds?: GardenBed[]; // New multiple beds support (optional for backward compatibility)
   createdAt: Date;
 }

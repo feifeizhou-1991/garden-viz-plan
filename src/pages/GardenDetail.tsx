@@ -63,8 +63,8 @@ const GardenDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-background p-4">
+      <div className="w-full space-y-6">
         {/* Header with Navigation */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
