@@ -169,6 +169,15 @@ export const BedManager: React.FC<BedManagerProps> = ({
     setTouchStart(null);
   };
 
+  // Desktop trackpad pinch-to-zoom handler
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      const delta = -e.deltaY * 0.01;
+      setZoom(prev => Math.max(0.5, Math.min(2, prev + delta)));
+    }
+  };
+
   // Bed dragging handlers
   const handleBedMouseDown = (e: React.MouseEvent, bedId: string) => {
     e.preventDefault();
@@ -301,6 +310,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onWheel={handleWheel}
           ref={containerRef}
         >
           <div 
