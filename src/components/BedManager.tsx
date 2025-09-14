@@ -44,8 +44,8 @@ export const BedManager: React.FC<BedManagerProps> = ({
       width: newBedSize.width,
       height: newBedSize.height,
       plants: [],
-      x: Math.random() * 200 + 100, // Random position
-      y: Math.random() * 200 + 100
+      x: Math.random() * 600 + 50, // Random position within container
+      y: Math.random() * 400 + 50
     };
 
     const updatedGarden = {
@@ -204,8 +204,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
     const deltaX = (e.clientX - dragStart.x) / zoom;
     const deltaY = (e.clientY - dragStart.y) / zoom;
 
-    const newX = Math.max(0, Math.min(800 - 200, bed.x + deltaX));
-    const newY = Math.max(0, Math.min(600 - 200, bed.y + deltaY));
+    // Allow beds to be placed anywhere within the container bounds
+    const newX = Math.max(0, bed.x + deltaX);
+    const newY = Math.max(0, bed.y + deltaY);
 
     updateBed({ ...bed, x: newX, y: newY });
     setDragStart({ x: e.clientX, y: e.clientY });
@@ -221,8 +222,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
     const deltaX = (touch.clientX - dragStart.x) / zoom;
     const deltaY = (touch.clientY - dragStart.y) / zoom;
 
-    const newX = Math.max(0, Math.min(800 - 200, bed.x + deltaX));
-    const newY = Math.max(0, Math.min(600 - 200, bed.y + deltaY));
+    // Allow beds to be placed anywhere within the container bounds  
+    const newX = Math.max(0, bed.x + deltaX);
+    const newY = Math.max(0, bed.y + deltaY);
 
     updateBed({ ...bed, x: newX, y: newY });
     setDragStart({ x: touch.clientX, y: touch.clientY });
