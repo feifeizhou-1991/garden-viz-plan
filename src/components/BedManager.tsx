@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Garden, GardenBed, Plant, PlantedCell } from '../types/garden';
 import { GardenGrid } from './GardenGrid';
 import { Button } from './ui/button';
@@ -21,6 +21,10 @@ export const BedManager: React.FC<BedManagerProps> = ({
 }) => {
   const [newBedSize, setNewBedSize] = useState({ width: 8, height: 6 });
   const [zoom, setZoom] = useState(1);
+  const [draggedBed, setDraggedBed] = useState<string | null>(null);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [touchStart, setTouchStart] = useState<{ distance: number; zoom: number } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize beds from plot if they don't exist (backward compatibility)
   const beds = garden.beds?.length > 0 ? garden.beds : [{
@@ -132,6 +136,110 @@ export const BedManager: React.FC<BedManagerProps> = ({
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.2, 2));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.5));
 
+  // Touch and pinch-to-zoom handlers
+  const getTouchDistance = (touches: React.TouchList) => {
+    if (touches.length < 2) return 0;
+    const touch1 = touches[0];
+    const touch2 = touches[1];
+    return Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) + 
+      Math.pow(touch2.clientY - touch1.clientY, 2)
+    );
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const distance = getTouchDistance(e.touches);
+      setTouchStart({ distance, zoom });
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && touchStart) {
+      const currentDistance = getTouchDistance(e.touches);
+      const scale = currentDistance / touchStart.distance;
+      const newZoom = Math.max(0.5, Math.min(2, touchStart.zoom * scale));
+      setZoom(newZoom);
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStart(null);
+  };
+
+  // Bed dragging handlers
+  const handleBedMouseDown = (e: React.MouseEvent, bedId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDraggedBed(bedId);
+    setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleBedTouchStart = (e: React.TouchEvent, bedId: string) => {
+    if (e.touches.length === 1) {
+      e.stopPropagation();
+      setDraggedBed(bedId);
+      const touch = e.touches[0];
+      setDragStart({ x: touch.clientX, y: touch.clientY });
+    }
+  };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!draggedBed) return;
+    
+    const bed = beds.find(b => b.id === draggedBed);
+    if (!bed) return;
+
+    const deltaX = (e.clientX - dragStart.x) / zoom;
+    const deltaY = (e.clientY - dragStart.y) / zoom;
+
+    const newX = Math.max(0, Math.min(800 - 200, bed.x + deltaX));
+    const newY = Math.max(0, Math.min(600 - 200, bed.y + deltaY));
+
+    updateBed({ ...bed, x: newX, y: newY });
+    setDragStart({ x: e.clientX, y: e.clientY });
+  }, [draggedBed, beds, dragStart, zoom, updateBed]);
+
+  const handleTouchMove2 = useCallback((e: TouchEvent) => {
+    if (!draggedBed || e.touches.length !== 1) return;
+    
+    const bed = beds.find(b => b.id === draggedBed);
+    if (!bed) return;
+
+    const touch = e.touches[0];
+    const deltaX = (touch.clientX - dragStart.x) / zoom;
+    const deltaY = (touch.clientY - dragStart.y) / zoom;
+
+    const newX = Math.max(0, Math.min(800 - 200, bed.x + deltaX));
+    const newY = Math.max(0, Math.min(600 - 200, bed.y + deltaY));
+
+    updateBed({ ...bed, x: newX, y: newY });
+    setDragStart({ x: touch.clientX, y: touch.clientY });
+  }, [draggedBed, beds, dragStart, zoom, updateBed]);
+
+  const handleMouseUp = useCallback(() => {
+    setDraggedBed(null);
+  }, []);
+
+  // Add global event listeners
+  React.useEffect(() => {
+    if (draggedBed) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('touchmove', handleTouchMove2);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchend', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('touchmove', handleTouchMove2);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchend', handleMouseUp);
+      };
+    }
+  }, [draggedBed, handleMouseMove, handleTouchMove2, handleMouseUp]);
+
   const totalPlants = beds.reduce((total, bed) => total + bed.plants.length, 0);
 
   return (
@@ -190,6 +298,10 @@ export const BedManager: React.FC<BedManagerProps> = ({
         <div 
           className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg overflow-auto bg-muted/5"
           style={{ height: '600px' }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          ref={containerRef}
         >
           <div 
             className="relative w-full h-full"
@@ -203,11 +315,13 @@ export const BedManager: React.FC<BedManagerProps> = ({
             {beds.map((bed) => (
               <div
                 key={bed.id}
-                className="absolute bg-background border border-border rounded-lg p-4 shadow-sm"
+                className="absolute bg-background border border-border rounded-lg p-4 shadow-sm cursor-move select-none"
                 style={{
                   left: `${bed.x}px`,
                   top: `${bed.y}px`,
                 }}
+                onMouseDown={(e) => handleBedMouseDown(e, bed.id)}
+                onTouchStart={(e) => handleBedTouchStart(e, bed.id)}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
