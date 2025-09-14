@@ -127,73 +127,27 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
   const totalPlants = getAllPlants().length;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <CardTitle className="text-xl">{garden.name}</CardTitle>
-              <div className="flex items-center gap-4 mt-2">
-                <span className="text-sm text-muted-foreground">
-                  {totalPlants} total plants
-                </span>
-                {Object.keys(typeCounts).length > 0 && (
-                  <div className="flex gap-2">
-                    {Object.entries(typeCounts).map(([type, count]) => (
-                      <span key={type} className="text-xs bg-secondary px-2 py-1 rounded">
-                        {count} {type}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={clearAllBeds}
-                className="flex items-center gap-2"
-                disabled={totalPlants === 0}
-              >
-                <RotateCcw className="w-4 h-4" />
-                Clear All
-              </Button>
-              <Button
-                onClick={exportPlan}
-                className="flex items-center gap-2"
-                disabled={totalPlants === 0}
-              >
-                <Download className="w-4 h-4" />
-                Export Plan
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* Full Width Layout */}
-      <div className="flex flex-col xl:flex-row gap-8">
-        {/* Garden Beds - Left Side */}
-        <div className="flex-1">
-          <BedManager
-            garden={garden}
-            selectedPlant={selectedPlant}
-            onUpdateGarden={handleUpdateGarden}
-          />
-        </div>
-        
-        {/* Plant Selector - Right Side */}
-        <div className="w-full xl:w-80">
-          <Card className="sticky top-4">
-            <CardContent className="pt-6">
-              <PlantSelector
-                selectedPlant={selectedPlant}
-                onSelectPlant={setSelectedPlant}
-              />
-            </CardContent>
-          </Card>
-        </div>
+    <div className="flex flex-col xl:flex-row gap-8">
+      {/* Garden Beds - Left Side */}
+      <div className="flex-1">
+        <BedManager
+          garden={garden}
+          selectedPlant={selectedPlant}
+          onUpdateGarden={handleUpdateGarden}
+          onClearAllBeds={clearAllBeds}
+        />
+      </div>
+      
+      {/* Plant Selector - Right Side */}
+      <div className="w-full xl:w-80">
+        <Card className="sticky top-4">
+          <CardContent className="pt-6">
+            <PlantSelector
+              selectedPlant={selectedPlant}
+              onSelectPlant={setSelectedPlant}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

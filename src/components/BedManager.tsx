@@ -5,19 +5,21 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Plus, Trash2, ZoomIn, ZoomOut } from 'lucide-react';
+import { Plus, Trash2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface BedManagerProps {
   garden: Garden;
   selectedPlant: Plant | null;
   onUpdateGarden: (garden: Garden) => void;
+  onClearAllBeds: () => void;
 }
 
 export const BedManager: React.FC<BedManagerProps> = ({
   garden,
   selectedPlant,
-  onUpdateGarden
+  onUpdateGarden,
+  onClearAllBeds
 }) => {
   const [newBedSize, setNewBedSize] = useState({ width: 8, height: 6 });
   const [zoom, setZoom] = useState(1);
@@ -257,17 +259,28 @@ export const BedManager: React.FC<BedManagerProps> = ({
     <Card className="h-full">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Garden Beds ({totalPlants} plants)</CardTitle>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleZoomOut}>
-              <ZoomOut className="w-4 h-4" />
-            </Button>
-            <span className="text-sm text-muted-foreground min-w-12 text-center">
-              {Math.round(zoom * 100)}%
-            </span>
-            <Button variant="outline" size="sm" onClick={handleZoomIn}>
-              <ZoomIn className="w-4 h-4" />
-            </Button>
+          <div className="flex items-center gap-4">
+            <span className="text-lg font-semibold">({totalPlants} plants)</span>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleZoomOut}>
+                <ZoomOut className="w-4 h-4" />
+              </Button>
+              <span className="text-sm text-muted-foreground min-w-12 text-center">
+                {Math.round(zoom * 100)}%
+              </span>
+              <Button variant="outline" size="sm" onClick={handleZoomIn}>
+                <ZoomIn className="w-4 h-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onClearAllBeds}
+                disabled={totalPlants === 0}
+                className="ml-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
         
