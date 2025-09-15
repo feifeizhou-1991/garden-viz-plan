@@ -21,7 +21,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
   onUpdateGarden,
   onClearAllBeds
 }) => {
-  const [newBedSize, setNewBedSize] = useState({ width: 8, height: 6 });
+  // Removed newBedSize state - using default 3x3 for new beds
   const [zoom, setZoom] = useState(1);
   const [draggedBed, setDraggedBed] = useState<string | null>(null);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -43,8 +43,8 @@ export const BedManager: React.FC<BedManagerProps> = ({
     const newBed: GardenBed = {
       id: `bed-${Date.now()}`,
       name: `Bed ${beds.length + 1}`,
-      width: newBedSize.width,
-      height: newBedSize.height,
+      width: 3,
+      height: 3,
       plants: [],
       x: Math.random() * 600 + 50, // Random position within container
       y: Math.random() * 400 + 50
@@ -57,7 +57,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
 
     onUpdateGarden(updatedGarden);
     toast.success(`Added new bed`);
-  }, [beds, newBedSize, garden, onUpdateGarden]);
+  }, [beds, garden, onUpdateGarden]);
 
   const deleteBed = useCallback((bedId: string) => {
     if (beds.length === 1) {
@@ -290,33 +290,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
             </div>
           </div>
           
-          {/* Add Bed Controls */}
-          <div className="flex items-center gap-2">
-            <div>
-              <Label htmlFor="bed-width" className="text-xs">Width</Label>
-              <Input
-                id="bed-width"
-                type="number"
-                min="3"
-                max="20"
-                value={newBedSize.width}
-                onChange={(e) => setNewBedSize(prev => ({ ...prev, width: parseInt(e.target.value) || 3 }))}
-                className="w-16 h-8 text-sm"
-              />
-            </div>
-            <div>
-              <Label htmlFor="bed-height" className="text-xs">Height</Label>
-              <Input
-                id="bed-height"
-                type="number"
-                min="3"
-                max="20"
-                value={newBedSize.height}
-                onChange={(e) => setNewBedSize(prev => ({ ...prev, height: parseInt(e.target.value) || 3 }))}
-                className="w-16 h-8 text-sm"
-              />
-            </div>
-            <Button onClick={addNewBed} size="sm" className="flex items-center gap-1 mt-4">
+          {/* Add Bed Button */}
+          <div>
+            <Button onClick={addNewBed} size="sm" className="flex items-center gap-1">
               <Plus className="w-3 h-3" />
               Add Bed
             </Button>
