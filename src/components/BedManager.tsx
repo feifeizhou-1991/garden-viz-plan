@@ -182,6 +182,10 @@ export const BedManager: React.FC<BedManagerProps> = ({
 
   // Bed dragging handlers
   const handleBedMouseDown = (e: React.MouseEvent, bedId: string) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('input,button,select,textarea,label,[data-no-drag]')) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     setDraggedBed(bedId);
@@ -190,6 +194,10 @@ export const BedManager: React.FC<BedManagerProps> = ({
 
   const handleBedTouchStart = (e: React.TouchEvent, bedId: string) => {
     if (e.touches.length === 1) {
+      const target = e.target as HTMLElement;
+      if (target.closest('input,button,select,textarea,label,[data-no-drag]')) {
+        return;
+      }
       e.stopPropagation();
       setDraggedBed(bedId);
       const touch = e.touches[0];
@@ -359,6 +367,8 @@ export const BedManager: React.FC<BedManagerProps> = ({
                           const newWidth = parseInt(e.target.value) || 3;
                           updateBed({ ...bed, width: newWidth });
                         }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
                         className="w-12 h-6 text-xs text-center p-1"
                       />
                     </div>
@@ -373,6 +383,8 @@ export const BedManager: React.FC<BedManagerProps> = ({
                           const newHeight = parseInt(e.target.value) || 3;
                           updateBed({ ...bed, height: newHeight });
                         }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
                         className="w-12 h-6 text-xs text-center p-1"
                       />
                     </div>
