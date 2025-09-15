@@ -260,7 +260,6 @@ export const BedManager: React.FC<BedManagerProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-lg font-semibold">({totalPlants} plants)</span>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleZoomOut}>
                 <ZoomOut className="w-4 h-4" />
@@ -350,12 +349,33 @@ export const BedManager: React.FC<BedManagerProps> = ({
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">
-                      {bed.width} × {bed.height}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      ({bed.plants.length} plants)
-                    </span>
+                    <div>
+                      <Input
+                        type="number"
+                        min="3"
+                        max="20"
+                        value={bed.width}
+                        onChange={(e) => {
+                          const newWidth = parseInt(e.target.value) || 3;
+                          updateBed({ ...bed, width: newWidth });
+                        }}
+                        className="w-12 h-6 text-xs text-center p-1"
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground">×</span>
+                    <div>
+                      <Input
+                        type="number"
+                        min="3"
+                        max="20"
+                        value={bed.height}
+                        onChange={(e) => {
+                          const newHeight = parseInt(e.target.value) || 3;
+                          updateBed({ ...bed, height: newHeight });
+                        }}
+                        className="w-12 h-6 text-xs text-center p-1"
+                      />
+                    </div>
                   </div>
                   {beds.length > 1 && (
                     <Button
