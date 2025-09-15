@@ -132,13 +132,17 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
             onDragEnd={handleDragEnd}
           >
             {plantedCell && (
-              <span 
-                className="select-none cursor-move" 
+              <div 
+                className="select-none cursor-move w-full h-full flex items-center justify-center" 
                 title={`${plantedCell.plant.name} (drag to move)`}
                 draggable
               >
-                {plantedCell.plant.icon}
-              </span>
+                <img 
+                  src={plantedCell.plant.icon} 
+                  alt={plantedCell.plant.name} 
+                  className="w-8 h-8 object-cover rounded-sm pointer-events-none"
+                />
+              </div>
             )}
             {isDraggedOver && !plantedCell && (
               <div className="absolute inset-0 bg-primary/10 rounded flex items-center justify-center">

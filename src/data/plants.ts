@@ -1,4 +1,14 @@
 import { Plant } from '../types/garden';
+import tomatoImg from '../assets/plants/tomato.jpg';
+import lettuceImg from '../assets/plants/lettuce.jpg';
+import carrotImg from '../assets/plants/carrot.jpg';
+import basilImg from '../assets/plants/basil.jpg';
+import pepperImg from '../assets/plants/pepper.jpg';
+import spinachImg from '../assets/plants/spinach.jpg';
+import radishImg from '../assets/plants/radish.jpg';
+import cucumberImg from '../assets/plants/cucumber.jpg';
+import onionImg from '../assets/plants/onion.jpg';
+import parsleyImg from '../assets/plants/parsley.jpg';
 
 export const PLANTS: Plant[] = [
   {
@@ -6,7 +16,7 @@ export const PLANTS: Plant[] = [
     name: 'Tomato',
     type: 'fruit',
     color: 'bg-red-500',
-    icon: '🍅',
+    icon: tomatoImg,
     spacing: 2,
     season: ['Spring', 'Summer']
   },
@@ -15,7 +25,7 @@ export const PLANTS: Plant[] = [
     name: 'Lettuce',
     type: 'leafy',
     color: 'bg-plant-leafy',
-    icon: '🥬',
+    icon: lettuceImg,
     spacing: 1,
     season: ['Spring', 'Fall']
   },
@@ -24,7 +34,7 @@ export const PLANTS: Plant[] = [
     name: 'Carrot',
     type: 'root',
     color: 'bg-orange-500',
-    icon: '🥕',
+    icon: carrotImg,
     spacing: 1,
     season: ['Spring', 'Summer', 'Fall']
   },
@@ -33,7 +43,7 @@ export const PLANTS: Plant[] = [
     name: 'Basil',
     type: 'herb',
     color: 'bg-plant-herb',
-    icon: '🌿',
+    icon: basilImg,
     spacing: 1,
     season: ['Spring', 'Summer']
   },
@@ -42,7 +52,7 @@ export const PLANTS: Plant[] = [
     name: 'Bell Pepper',
     type: 'fruit',
     color: 'bg-yellow-500',
-    icon: '🫑',
+    icon: pepperImg,
     spacing: 2,
     season: ['Summer']
   },
@@ -51,7 +61,7 @@ export const PLANTS: Plant[] = [
     name: 'Spinach',
     type: 'leafy',
     color: 'bg-green-600',
-    icon: '🥬',
+    icon: spinachImg,
     spacing: 1,
     season: ['Spring', 'Fall']
   },
@@ -60,7 +70,7 @@ export const PLANTS: Plant[] = [
     name: 'Radish',
     type: 'root',
     color: 'bg-pink-500',
-    icon: '🥬',
+    icon: radishImg,
     spacing: 1,
     season: ['Spring', 'Fall']
   },
@@ -69,7 +79,7 @@ export const PLANTS: Plant[] = [
     name: 'Cucumber',
     type: 'fruit',
     color: 'bg-green-500',
-    icon: '🥒',
+    icon: cucumberImg,
     spacing: 3,
     season: ['Summer']
   },
@@ -78,7 +88,7 @@ export const PLANTS: Plant[] = [
     name: 'Onion',
     type: 'root',
     color: 'bg-purple-400',
-    icon: '🧅',
+    icon: onionImg,
     spacing: 1,
     season: ['Spring', 'Summer', 'Fall']
   },
@@ -87,7 +97,7 @@ export const PLANTS: Plant[] = [
     name: 'Parsley',
     type: 'herb',
     color: 'bg-green-500',
-    icon: '🌿',
+    icon: parsleyImg,
     spacing: 1,
     season: ['Spring', 'Summer', 'Fall']
   }

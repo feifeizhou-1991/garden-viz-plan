@@ -56,7 +56,13 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
             onDragStart={(e) => handleDragStart(e, plant)}
           >
             <div className="text-center space-y-2">
-              <div className="text-3xl">{plant.icon}</div>
+              <div className="w-12 h-12 mx-auto overflow-hidden rounded-lg bg-white/10 flex items-center justify-center">
+                <img 
+                  src={plant.icon} 
+                  alt={plant.name} 
+                  className="w-10 h-10 object-cover rounded-md"
+                />
+              </div>
               <div className="text-sm font-medium text-card-foreground">
                 {plant.name}
               </div>
@@ -70,8 +76,14 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
       
       {selectedPlant && (
         <div className="mt-4 p-4 bg-secondary rounded-lg border">
-          <p className="text-sm text-secondary-foreground">
-            <span className="font-medium">Selected:</span> {selectedPlant.icon} {selectedPlant.name}
+          <p className="text-sm text-secondary-foreground flex items-center gap-2">
+            <span className="font-medium">Selected:</span>
+            <img 
+              src={selectedPlant.icon} 
+              alt={selectedPlant.name} 
+              className="w-6 h-6 object-cover rounded"
+            />
+            {selectedPlant.name}
             <span className="ml-2 text-xs">({selectedPlant.spacing} cell{selectedPlant.spacing > 1 ? 's' : ''} spacing)</span>
           </p>
         </div>
