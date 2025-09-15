@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Plus, Trash2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Plus, Trash2, ZoomIn, ZoomOut, RotateCcw, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface BedManagerProps {
@@ -26,6 +26,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
   const [draggedBed, setDraggedBed] = useState<string | null>(null);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [touchStart, setTouchStart] = useState<{ distance: number; zoom: number } | null>(null);
+  const [editingBed, setEditingBed] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize beds from plot if they don't exist (backward compatibility)
@@ -332,49 +333,66 @@ export const BedManager: React.FC<BedManagerProps> = ({
                 onTouchStart={(e) => handleBedTouchStart(e, bed.id)}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <Input
-                        type="number"
-                        min="3"
-                        max="20"
-                        value={bed.width}
-                        onChange={(e) => {
-                          const newWidth = parseInt(e.target.value) || 3;
-                          updateBed({ ...bed, width: newWidth });
-                        }}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onTouchStart={(e) => e.stopPropagation()}
-                        className="w-12 h-6 text-xs text-center p-1"
-                      />
+                  {editingBed === bed.id ? (
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <Input
+                          type="number"
+                          min="3"
+                          max="20"
+                          value={bed.width}
+                          onChange={(e) => {
+                            const newWidth = parseInt(e.target.value) || 3;
+                            updateBed({ ...bed, width: newWidth });
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          className="w-12 h-6 text-xs text-center p-1"
+                        />
+                      </div>
+                      <span className="text-xs text-muted-foreground">×</span>
+                      <div>
+                        <Input
+                          type="number"
+                          min="3"
+                          max="20"
+                          value={bed.height}
+                          onChange={(e) => {
+                            const newHeight = parseInt(e.target.value) || 3;
+                            updateBed({ ...bed, height: newHeight });
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          className="w-12 h-6 text-xs text-center p-1"
+                        />
+                      </div>
                     </div>
-                    <span className="text-xs text-muted-foreground">×</span>
-                    <div>
-                      <Input
-                        type="number"
-                        min="3"
-                        max="20"
-                        value={bed.height}
-                        onChange={(e) => {
-                          const newHeight = parseInt(e.target.value) || 3;
-                          updateBed({ ...bed, height: newHeight });
-                        }}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onTouchStart={(e) => e.stopPropagation()}
-                        className="w-12 h-6 text-xs text-center p-1"
-                      />
+                  ) : (
+                    <div className="text-sm font-medium text-foreground">
+                      {bed.name} ({bed.width}×{bed.height})
                     </div>
-                  </div>
-                  {beds.length > 1 && (
+                  )}
+                  
+                  <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => deleteBed(bed.id)}
-                      className="text-destructive hover:text-destructive h-6 w-6 p-0"
+                      onClick={() => setEditingBed(editingBed === bed.id ? null : bed.id)}
+                      className="text-muted-foreground hover:text-foreground h-6 w-6 p-0"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Edit className="w-3 h-3" />
                     </Button>
-                  )}
+                    {beds.length > 1 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteBed(bed.id)}
+                        className="text-destructive hover:text-destructive h-6 w-6 p-0"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 
                 <GardenGrid
