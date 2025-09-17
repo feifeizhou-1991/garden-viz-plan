@@ -167,13 +167,7 @@ const GardensOverview: React.FC = () => {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Grid3x3 className="w-4 h-4" />
-                      {garden.plot.width}×{garden.plot.height} grid
-                    </span>
-                  </div>
+                <CardContent>
                 </CardContent>
               </Link>
               
