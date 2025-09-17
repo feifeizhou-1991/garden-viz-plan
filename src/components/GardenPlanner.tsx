@@ -127,9 +127,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
   const totalPlants = getAllPlants().length;
 
   return (
-    <div className="flex flex-col xl:flex-row gap-8">
+    <div className="flex flex-col xl:flex-row gap-8 h-[calc(100vh-12rem)]">
       {/* Garden Beds - Left Side */}
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <BedManager
           garden={garden}
           selectedPlant={selectedPlant}
@@ -139,9 +139,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
       </div>
       
       {/* Plant Selector - Right Side */}
-      <div className="w-full xl:w-80">
-        <Card className="sticky top-4">
-          <CardContent className="pt-6">
+      <div className="w-full xl:w-80 h-full">
+        <Card className="h-full flex flex-col">
+          <CardContent className="pt-6 flex-1 overflow-hidden">
             <PlantSelector
               selectedPlant={selectedPlant}
               onSelectPlant={setSelectedPlant}

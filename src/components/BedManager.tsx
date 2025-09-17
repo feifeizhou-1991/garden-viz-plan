@@ -265,8 +265,8 @@ export const BedManager: React.FC<BedManagerProps> = ({
   const totalPlants = beds.reduce((total, bed) => total + bed.plants.length, 0);
 
   return (
-    <Card className="h-full">
-      <CardHeader>
+    <Card className="h-full flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -301,11 +301,10 @@ export const BedManager: React.FC<BedManagerProps> = ({
         </div>
       </CardHeader>
       
-      <CardContent className="h-full">
+      <CardContent className="flex-1 overflow-hidden">
         {/* Unified Bed Container */}
         <div 
-          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg overflow-auto bg-muted/5"
-          style={{ height: '600px' }}
+          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg overflow-auto bg-muted/5 h-full"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}

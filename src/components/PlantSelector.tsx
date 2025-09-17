@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plant } from '../types/garden';
 import { PLANTS } from '../data/plants';
 import { cn } from '../lib/utils';
 import { Card } from './ui/card';
+import { Input } from './ui/input';
+import { Search } from 'lucide-react';
 
 interface PlantSelectorProps {
   selectedPlant: Plant | null;
@@ -13,6 +15,17 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
   selectedPlant,
   onSelectPlant
 }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredPlants = useMemo(() => {
+    if (!searchTerm.trim()) return PLANTS;
+    
+    const term = searchTerm.toLowerCase();
+    return PLANTS.filter(plant => 
+      plant.name.toLowerCase().includes(term) ||
+      plant.type.toLowerCase().includes(term)
+    );
+  }, [searchTerm]);
   const getTypeColor = (type: Plant['type']) => {
     switch (type) {
       case 'leafy': return 'border-l-plant-leafy bg-plant-leafy/10';
@@ -32,7 +45,7 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="h-full flex flex-col">
       <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
         🌱 Plant Selection
       </h3>
@@ -40,8 +53,21 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
         Click to select or drag to plant
       </p>
       
-      <div className="grid grid-cols-2 gap-3">
-        {PLANTS.map((plant) => (
+      {/* Search Input */}
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          placeholder="Search plants..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10"
+        />
+      </div>
+      
+      {/* Scrollable Plant Grid */}
+      <div className="flex-1 overflow-y-auto pr-2">
+        <div className="grid grid-cols-2 gap-3">
+        {filteredPlants.map((plant) => (
           <Card
             key={plant.id}
             draggable
@@ -72,6 +98,7 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
             </div>
           </Card>
         ))}
+        </div>
       </div>
       
       {selectedPlant && (
