@@ -168,27 +168,11 @@ const GardensOverview: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Grid3x3 className="w-4 h-4" />
                       {garden.plot.width}×{garden.plot.height} grid
                     </span>
-                    <span>{garden.plot.plants.length} plants</span>
-                  </div>
-                  
-                  {/* Mini preview of the garden */}
-                  <div className="w-full h-20 bg-muted rounded border grid grid-cols-6 gap-px p-1">
-                    {Array.from({ length: 24 }).map((_, i) => (
-                      <div 
-                        key={i}
-                        className="bg-background rounded-sm"
-                        style={{
-                          backgroundColor: garden.plot.plants.find(p => 
-                            Math.floor(p.x / 2) + Math.floor(p.y / 2) * 6 === i
-                          )?.plant.color || undefined
-                        }}
-                      />
-                    ))}
                   </div>
                 </CardContent>
               </Link>
