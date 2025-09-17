@@ -137,7 +137,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
   }, [beds, updateBed]);
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.2, 2));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.5));
+  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.1));
 
   // Touch and pinch-to-zoom handlers
   const getTouchDistance = (touches: React.TouchList) => {
@@ -162,7 +162,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
     if (e.touches.length === 2 && touchStart) {
       const currentDistance = getTouchDistance(e.touches);
       const scale = currentDistance / touchStart.distance;
-      const newZoom = Math.max(0.5, Math.min(2, touchStart.zoom * scale));
+      const newZoom = Math.max(0.1, Math.min(2, touchStart.zoom * scale));
       setZoom(newZoom);
       e.preventDefault();
     }
@@ -177,7 +177,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
     if (e.ctrlKey) {
       e.preventDefault();
       const delta = -e.deltaY * 0.01;
-      setZoom(prev => Math.max(0.5, Math.min(2, prev + delta)));
+      setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
     }
   };
 
