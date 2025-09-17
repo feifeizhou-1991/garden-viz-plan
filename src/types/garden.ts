@@ -22,6 +22,7 @@ export interface GardenBed {
   plants: PlantedCell[];
   x: number; // position in garden layout
   y: number; // position in garden layout
+  pinned?: boolean; // whether the bed is pinned (not draggable)
 }
 
 export interface GardenPlot {

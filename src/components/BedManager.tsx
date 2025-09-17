@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Plus, Trash2, ZoomIn, ZoomOut, RotateCcw, Edit } from 'lucide-react';
+import { Plus, Trash2, ZoomIn, ZoomOut, RotateCcw, Edit, Pin, PinOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface BedManagerProps {
@@ -27,6 +27,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [touchStart, setTouchStart] = useState<{ distance: number; zoom: number } | null>(null);
   const [editingBed, setEditingBed] = useState<string | null>(null);
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const [viewportOffset, setViewportOffset] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize beds from plot if they don't exist (backward compatibility)
@@ -48,7 +51,8 @@ export const BedManager: React.FC<BedManagerProps> = ({
       height: 3,
       plants: [],
       x: Math.random() * 600 + 50, // Random position within container
-      y: Math.random() * 400 + 50
+      y: Math.random() * 400 + 50,
+      pinned: false
     };
 
     const updatedGarden = {
@@ -119,6 +123,60 @@ export const BedManager: React.FC<BedManagerProps> = ({
     }
   }, [beds, updateBed]);
 
+  const toggleBedPin = useCallback((bedId: string) => {
+    const bed = beds.find(b => b.id === bedId);
+    if (!bed) return;
+
+    const updatedBed = { ...bed, pinned: !bed.pinned };
+    updateBed(updatedBed);
+    toast.success(`Bed ${updatedBed.pinned ? 'pinned' : 'unpinned'}`);
+  }, [beds, updateBed]);
+
+  // Pan functionality
+  const handlePanStart = (e: React.MouseEvent | React.TouchEvent) => {
+    // Only start panning if not clicking on a bed or control
+    const target = e.target as HTMLElement;
+    if (target.closest('.bed-container, input, button, select, textarea, label, [data-no-drag]')) {
+      return;
+    }
+    
+    setIsPanning(true);
+    if ('touches' in e) {
+      const touch = e.touches[0];
+      setPanStart({ x: touch.clientX, y: touch.clientY });
+    } else {
+      setPanStart({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handlePanMove = useCallback((e: MouseEvent | TouchEvent) => {
+    if (!isPanning) return;
+    
+    let clientX: number, clientY: number;
+    if ('touches' in e) {
+      const touch = e.touches[0];
+      clientX = touch.clientX;
+      clientY = touch.clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    const deltaX = clientX - panStart.x;
+    const deltaY = clientY - panStart.y;
+
+    setViewportOffset(prev => ({
+      x: prev.x + deltaX,
+      y: prev.y + deltaY
+    }));
+
+    setPanStart({ x: clientX, y: clientY });
+  }, [isPanning, panStart]);
+
+  const handlePanEnd = useCallback(() => {
+    setIsPanning(false);
+  }, []);
+
   const handleMovePlant = useCallback((bedId: string, fromX: number, fromY: number, toX: number, toY: number) => {
     const bed = beds.find(b => b.id === bedId);
     if (!bed) return;
@@ -183,6 +241,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
 
   // Bed dragging handlers
   const handleBedMouseDown = (e: React.MouseEvent, bedId: string) => {
+    const bed = beds.find(b => b.id === bedId);
+    if (!bed || bed.pinned) return; // Don't drag pinned beds
+    
     const target = e.target as HTMLElement;
     if (target.closest('input,button,select,textarea,label,[data-no-drag]')) {
       return;
@@ -194,6 +255,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
   };
 
   const handleBedTouchStart = (e: React.TouchEvent, bedId: string) => {
+    const bed = beds.find(b => b.id === bedId);
+    if (!bed || bed.pinned) return; // Don't drag pinned beds
+    
     if (e.touches.length === 1) {
       const target = e.target as HTMLElement;
       if (target.closest('input,button,select,textarea,label,[data-no-drag]')) {
@@ -245,22 +309,37 @@ export const BedManager: React.FC<BedManagerProps> = ({
     setDraggedBed(null);
   }, []);
 
-  // Add global event listeners
+  // Add global event listeners for both panning and bed dragging
   React.useEffect(() => {
-    if (draggedBed) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('touchmove', handleTouchMove2);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('touchend', handleMouseUp);
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      handlePanMove(e);
+      handleMouseMove(e);
+    };
+
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      handlePanMove(e);
+      handleTouchMove2(e);
+    };
+
+    const handleGlobalEnd = () => {
+      handlePanEnd();
+      handleMouseUp();
+    };
+
+    if (isPanning || draggedBed) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('touchmove', handleGlobalTouchMove);
+      document.addEventListener('mouseup', handleGlobalEnd);
+      document.addEventListener('touchend', handleGlobalEnd);
       
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('touchmove', handleTouchMove2);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.removeEventListener('touchend', handleMouseUp);
+        document.removeEventListener('mousemove', handleGlobalMouseMove);
+        document.removeEventListener('touchmove', handleGlobalTouchMove);
+        document.removeEventListener('mouseup', handleGlobalEnd);
+        document.removeEventListener('touchend', handleGlobalEnd);
       };
     }
-  }, [draggedBed, handleMouseMove, handleTouchMove2, handleMouseUp]);
+  }, [isPanning, draggedBed, handlePanMove, handleMouseMove, handleTouchMove2, handlePanEnd, handleMouseUp]);
 
   const totalPlants = beds.reduce((total, bed) => total + bed.plants.length, 0);
 
@@ -304,8 +383,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
       <CardContent className="flex-1 overflow-hidden">
         {/* Unified Bed Container */}
         <div 
-          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg overflow-auto bg-muted/5 h-full"
-          onTouchStart={handleTouchStart}
+          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/5 h-full cursor-grab active:cursor-grabbing"
+          onMouseDown={handlePanStart}
+          onTouchStart={handlePanStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onWheel={handleWheel}
@@ -314,7 +394,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
           <div 
             className="relative w-full h-full"
             style={{ 
-              transform: `scale(${zoom})`,
+              transform: `scale(${zoom}) translate(${viewportOffset.x / zoom}px, ${viewportOffset.y / zoom}px)`,
               transformOrigin: 'top left',
               minWidth: '800px',
               minHeight: '600px'
@@ -323,13 +403,13 @@ export const BedManager: React.FC<BedManagerProps> = ({
             {beds.map((bed) => (
               <div
                 key={bed.id}
-                className="absolute bg-background border border-border rounded-lg p-4 shadow-sm cursor-move select-none"
+                className={`bed-container absolute bg-background border border-border rounded-lg p-4 shadow-sm select-none ${bed.pinned ? 'cursor-default' : 'cursor-move'}`}
                 style={{
                   left: `${bed.x}px`,
                   top: `${bed.y}px`,
                 }}
-                onMouseDown={(e) => handleBedMouseDown(e, bed.id)}
-                onTouchStart={(e) => handleBedTouchStart(e, bed.id)}
+                onMouseDown={bed.pinned ? undefined : (e) => handleBedMouseDown(e, bed.id)}
+                onTouchStart={bed.pinned ? undefined : (e) => handleBedTouchStart(e, bed.id)}
               >
                 <div className="flex items-center justify-between mb-3">
                   {editingBed === bed.id ? (
@@ -373,6 +453,15 @@ export const BedManager: React.FC<BedManagerProps> = ({
                   )}
                   
                   <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleBedPin(bed.id)}
+                      className={`h-6 w-6 p-0 ${bed.pinned ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                      title={bed.pinned ? 'Unpin bed' : 'Pin bed'}
+                    >
+                      {bed.pinned ? <Pin className="w-3 h-3" /> : <PinOff className="w-3 h-3" />}
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
