@@ -140,7 +140,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
                 <img 
                   src={plantedCell.plant.icon} 
                   alt={plantedCell.plant.name} 
-                  className="w-8 h-8 object-cover rounded-sm pointer-events-none"
+                  className="w-12 h-12 object-cover rounded-sm pointer-events-none"
                 />
               </div>
             )}
