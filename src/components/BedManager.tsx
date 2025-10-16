@@ -40,7 +40,8 @@ export const BedManager: React.FC<BedManagerProps> = ({
     height: garden.plot.height,
     plants: garden.plot.plants,
     x: 50, // Center the default bed
-    y: 50
+    y: 50,
+    pinned: false
   }];
 
   const addNewBed = useCallback(() => {
