@@ -308,23 +308,22 @@ export const BedManager: React.FC<BedManagerProps> = ({
     if (!draggedBed) return;
     
     const bed = beds.find(b => b.id === draggedBed);
-    if (!bed || !containerRef.current) return;
+    if (!bed) return;
 
     const deltaX = (e.clientX - dragStart.x) / zoom;
     const deltaY = (e.clientY - dragStart.y) / zoom;
 
-    // Get container dimensions
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const containerWidth = containerRect.width / zoom;
-    const containerHeight = containerRect.height / zoom;
+    // Canvas dimensions (from the transformed div's min dimensions)
+    const canvasWidth = 800;
+    const canvasHeight = 600;
     
     // Calculate bed dimensions (approximate based on grid size)
     const bedWidth = bed.width * 60; // ~60px per cell including padding
     const bedHeight = bed.height * 60;
 
-    // Constrain bed position within container bounds
-    const newX = Math.max(0, Math.min(containerWidth - bedWidth, bed.x + deltaX));
-    const newY = Math.max(0, Math.min(containerHeight - bedHeight, bed.y + deltaY));
+    // Constrain bed position within canvas bounds
+    const newX = Math.max(0, Math.min(canvasWidth - bedWidth, bed.x + deltaX));
+    const newY = Math.max(0, Math.min(canvasHeight - bedHeight, bed.y + deltaY));
 
     updateBed({ ...bed, x: newX, y: newY });
     setDragStart({ x: e.clientX, y: e.clientY });
@@ -334,24 +333,23 @@ export const BedManager: React.FC<BedManagerProps> = ({
     if (!draggedBed || e.touches.length !== 1) return;
     
     const bed = beds.find(b => b.id === draggedBed);
-    if (!bed || !containerRef.current) return;
+    if (!bed) return;
 
     const touch = e.touches[0];
     const deltaX = (touch.clientX - dragStart.x) / zoom;
     const deltaY = (touch.clientY - dragStart.y) / zoom;
 
-    // Get container dimensions
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const containerWidth = containerRect.width / zoom;
-    const containerHeight = containerRect.height / zoom;
+    // Canvas dimensions (from the transformed div's min dimensions)
+    const canvasWidth = 800;
+    const canvasHeight = 600;
     
     // Calculate bed dimensions (approximate based on grid size)
     const bedWidth = bed.width * 60; // ~60px per cell including padding
     const bedHeight = bed.height * 60;
 
-    // Constrain bed position within container bounds
-    const newX = Math.max(0, Math.min(containerWidth - bedWidth, bed.x + deltaX));
-    const newY = Math.max(0, Math.min(containerHeight - bedHeight, bed.y + deltaY));
+    // Constrain bed position within canvas bounds
+    const newX = Math.max(0, Math.min(canvasWidth - bedWidth, bed.x + deltaX));
+    const newY = Math.max(0, Math.min(canvasHeight - bedHeight, bed.y + deltaY));
 
     updateBed({ ...bed, x: newX, y: newY });
     setDragStart({ x: touch.clientX, y: touch.clientY });
