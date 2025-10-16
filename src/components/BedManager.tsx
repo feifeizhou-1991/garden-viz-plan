@@ -240,6 +240,39 @@ export const BedManager: React.FC<BedManagerProps> = ({
     }
   };
 
+  // Prevent browser-level pinch zoom inside the canvas (trackpads/Safari gestures)
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const wheelListener = (e: WheelEvent) => {
+      if (e.ctrlKey || (e as any).metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        const delta = -e.deltaY * 0.01;
+        setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
+      }
+    };
+
+    const preventGesture = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    el.addEventListener('wheel', wheelListener, { passive: false });
+    // Safari gesture events (non-standard) — cast to any to avoid TS issues
+    (el as any).addEventListener('gesturestart', preventGesture, { passive: false });
+    (el as any).addEventListener('gesturechange', preventGesture, { passive: false });
+    (el as any).addEventListener('gestureend', preventGesture, { passive: false });
+
+    return () => {
+      el.removeEventListener('wheel', wheelListener as EventListener);
+      (el as any).removeEventListener('gesturestart', preventGesture as EventListener);
+      (el as any).removeEventListener('gesturechange', preventGesture as EventListener);
+      (el as any).removeEventListener('gestureend', preventGesture as EventListener);
+    };
+  }, []);
+
   // Bed dragging handlers
   const handleBedMouseDown = (e: React.MouseEvent, bedId: string) => {
     const bed = beds.find(b => b.id === bedId);
@@ -384,12 +417,13 @@ export const BedManager: React.FC<BedManagerProps> = ({
       <CardContent className="flex-1 overflow-hidden">
         {/* Unified Bed Container */}
         <div 
-          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/5 h-full cursor-grab active:cursor-grabbing touch-none"
+          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/5 h-full cursor-grab active:cursor-grabbing touch-none overscroll-contain"
           onMouseDown={handlePanStart}
           onTouchStart={handlePanStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onWheel={handleWheel}
+          onWheelCapture={handleWheel}
           ref={containerRef}
           style={{ touchAction: 'none' }}
         >
