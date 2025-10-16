@@ -232,8 +232,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
 
   // Desktop trackpad pinch-to-zoom handler
   const handleWheel = (e: React.WheelEvent) => {
-    if (e.ctrlKey) {
+    if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
+      e.stopPropagation();
       const delta = -e.deltaY * 0.01;
       setZoom(prev => Math.max(0.1, Math.min(2, prev + delta)));
     }
@@ -383,13 +384,14 @@ export const BedManager: React.FC<BedManagerProps> = ({
       <CardContent className="flex-1 overflow-hidden">
         {/* Unified Bed Container */}
         <div 
-          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/5 h-full cursor-grab active:cursor-grabbing"
+          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/5 h-full cursor-grab active:cursor-grabbing touch-none"
           onMouseDown={handlePanStart}
           onTouchStart={handlePanStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onWheel={handleWheel}
           ref={containerRef}
+          style={{ touchAction: 'none' }}
         >
           <div 
             className="relative w-full h-full"
