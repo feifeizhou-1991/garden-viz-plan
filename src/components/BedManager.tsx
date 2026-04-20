@@ -13,6 +13,7 @@ interface BedManagerProps {
   onUpdateGarden: (garden: Garden) => void;
   onClearAllBeds: () => void;
   onEmptyCellClick?: (bedId: string, x: number, y: number) => void;
+  onPlantedCellClick?: (bedId: string, x: number, y: number) => void;
 }
 
 export const BedManager: React.FC<BedManagerProps> = ({
@@ -21,6 +22,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
   onUpdateGarden,
   onClearAllBeds,
   onEmptyCellClick,
+  onPlantedCellClick,
 }) => {
   const [zoom, setZoom] = useState(0.7);
   const [touchStart, setTouchStart] = useState<{ distance: number; zoom: number } | null>(null);
@@ -286,6 +288,11 @@ export const BedManager: React.FC<BedManagerProps> = ({
                   onEmptyCellClick={
                     onEmptyCellClick
                       ? (x, y) => onEmptyCellClick(bed.id, x, y)
+                      : undefined
+                  }
+                  onPlantedCellClick={
+                    onPlantedCellClick
+                      ? (x, y) => onPlantedCellClick(bed.id, x, y)
                       : undefined
                   }
                 />

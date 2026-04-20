@@ -11,6 +11,7 @@ interface GardenGridProps {
   onRemoveCell: (x: number, y: number) => void;
   onMovePlant?: (fromX: number, fromY: number, toX: number, toY: number) => void;
   onEmptyCellClick?: (x: number, y: number) => void;
+  onPlantedCellClick?: (x: number, y: number) => void;
 }
 
 export const GardenGrid: React.FC<GardenGridProps> = ({
@@ -21,6 +22,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
   onPlantCell,
   onRemoveCell,
   onEmptyCellClick,
+  onPlantedCellClick,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 
@@ -32,13 +34,17 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
     const existingPlant = getPlantAtCell(x, y);
     
     if (existingPlant) {
-      onRemoveCell(x, y);
+      if (onPlantedCellClick) {
+        onPlantedCellClick(x, y);
+      } else {
+        onRemoveCell(x, y);
+      }
     } else if (selectedPlant) {
       onPlantCell(x, y, selectedPlant);
     } else if (onEmptyCellClick) {
       onEmptyCellClick(x, y);
     }
-  }, [selectedPlant, getPlantAtCell, onPlantCell, onRemoveCell, onEmptyCellClick]);
+  }, [selectedPlant, getPlantAtCell, onPlantCell, onRemoveCell, onEmptyCellClick, onPlantedCellClick]);
 
   const renderGrid = () => {
     const cells = [];
