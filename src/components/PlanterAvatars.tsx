@@ -71,7 +71,7 @@ export const PlanterAvatars: React.FC<PlanterAvatarsProps> = ({ garden, max = 5 
                 <div className="text-xs">
                   <div className="font-medium">{label}</div>
                   <div className="text-muted-foreground">
-                    {count} unique species
+                    {count} plant{count === 1 ? '' : 's'}
                   </div>
                 </div>
               </TooltipContent>
