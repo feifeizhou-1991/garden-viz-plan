@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Garden } from '../types/garden';
 import { Button } from '../components/ui/button';
@@ -9,102 +9,57 @@ import { Plus, Calendar, Grid3x3, Pencil, Trash2, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-
-// Get gardens from localStorage or return default
-const getStoredGardens = (): Garden[] => {
-  const stored = localStorage.getItem('gardens');
-  if (stored) {
-    const parsed = JSON.parse(stored);
-    return parsed.map((g: any) => ({
-      ...g,
-      createdAt: new Date(g.createdAt)
-    }));
-  }
-  return [
-    {
-      id: 'default',
-      name: 'Garden 2026',
-      plot: {
-        width: 12,
-        height: 8,
-        plants: []
-      },
-      createdAt: new Date()
-    }
-  ];
-};
+import { useGardens, createGarden, renameGarden, deleteGarden as deleteGardenApi } from '@/hooks/useGardens';
 
 const GardensOverview: React.FC = () => {
   const navigate = useNavigate();
-  const [gardens, setGardens] = useState<Garden[]>(() => {
-    const stored = getStoredGardens().map((g) =>
-      g.name === 'My First Garden' ? { ...g, name: 'Garden 2026' } : g
-    );
-    // Ensure gardens are always saved to localStorage
-    localStorage.setItem('gardens', JSON.stringify(stored));
-    return stored;
-  });
+  const { gardens, loading } = useGardens();
   const [newGardenName, setNewGardenName] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingGarden, setEditingGarden] = useState<Garden | null>(null);
   const [editName, setEditName] = useState('');
 
-  // Save to localStorage whenever gardens change
-  const saveGardens = useCallback((updatedGardens: Garden[]) => {
-    localStorage.setItem('gardens', JSON.stringify(updatedGardens));
-    setGardens(updatedGardens);
-  }, []);
-
-  const handleCreateGarden = () => {
+  const handleCreateGarden = async () => {
     if (!newGardenName.trim()) {
       toast.error('Please enter a garden name');
       return;
     }
-    
-    const newGarden: Garden = {
-      id: `garden-${Date.now()}`,
-      name: newGardenName.trim(),
-      plot: {
-        width: 12,
-        height: 8,
-        plants: []
-      },
-      createdAt: new Date()
-    };
-    
-    const updatedGardens = [...gardens, newGarden];
-    saveGardens(updatedGardens);
-    setNewGardenName('');
-    setShowCreateDialog(false);
-    toast.success(`Created garden "${newGardenName.trim()}"`);
+    try {
+      await createGarden(newGardenName.trim());
+      toast.success(`Created garden "${newGardenName.trim()}"`);
+      setNewGardenName('');
+      setShowCreateDialog(false);
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to create garden');
+    }
   };
 
-  const handleRenameGarden = () => {
+  const handleRenameGarden = async () => {
     if (!editingGarden || !editName.trim()) {
       toast.error('Please enter a valid name');
       return;
     }
-    
-    const updatedGardens = gardens.map(garden => 
-      garden.id === editingGarden.id 
-        ? { ...garden, name: editName.trim() }
-        : garden
-    );
-    saveGardens(updatedGardens);
-    toast.success(`Renamed garden to "${editName.trim()}"`);
-    setEditingGarden(null);
-    setEditName('');
+    try {
+      await renameGarden(editingGarden.id, editName.trim());
+      toast.success(`Renamed garden to "${editName.trim()}"`);
+      setEditingGarden(null);
+      setEditName('');
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to rename garden');
+    }
   };
 
-  const handleDeleteGarden = (garden: Garden) => {
+  const handleDeleteGarden = async (garden: Garden) => {
     if (gardens.length <= 1) {
       toast.error('Cannot delete the last garden');
       return;
     }
-    
-    const updatedGardens = gardens.filter(g => g.id !== garden.id);
-    saveGardens(updatedGardens);
-    toast.success(`Deleted garden "${garden.name}"`);
+    try {
+      await deleteGardenApi(garden.id);
+      toast.success(`Deleted garden "${garden.name}"`);
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to delete garden');
+    }
   };
 
   const startEditing = (garden: Garden) => {
