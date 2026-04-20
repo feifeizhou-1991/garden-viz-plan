@@ -18,8 +18,8 @@ export const FIXED_BED_LAYOUT: FixedBedTemplate[] = [
   { name: 'Bed 2', width: 3, height: 9, x: 440,  y: 40 },
   { name: 'Bed 3', width: 3, height: 7, x: 780,  y: 40 },
   { name: 'Bed 4', width: 3, height: 6, x: 1120, y: 40 },
-  // Bed 5 sits below Bed 1
-  { name: 'Bed 5', width: 2, height: 5, x: 40,   y: 820 },
+  // Bed 5 sits below Bed 1, vertically aligned (top edge) with Bed 6
+  { name: 'Bed 5', width: 2, height: 5, x: 40,   y: 900 },
   // Bottom row
   { name: 'Bed 6', width: 3, height: 6, x: 340,  y: 900 },
   { name: 'Bed 7', width: 5, height: 6, x: 700,  y: 900 },
