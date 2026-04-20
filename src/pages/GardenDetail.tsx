@@ -4,6 +4,7 @@ import { Garden } from '../types/garden';
 import { GardenPlanner } from '../components/GardenPlanner';
 import { Button } from '../components/ui/button';
 import { ArrowLeft, Edit, Sparkles } from 'lucide-react';
+import { PlanterAvatars } from '../components/PlanterAvatars';
 import { toast } from 'sonner';
 import { getGardenById, syncGardenBeds, ensureFixedLayout } from '@/hooks/useGardens';
 import { supabase } from '@/integrations/supabase/client';
@@ -89,11 +90,12 @@ const GardenDetail: React.FC = () => {
                 <ArrowLeft className="w-4 h-4" />
               </Button>
             </Link>
-            <div>
+            <div className="flex items-center gap-4">
               <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
                 <span>🌿</span>
                 {garden.name}
               </h1>
+              <PlanterAvatars garden={garden} />
             </div>
           </div>
           <Button
