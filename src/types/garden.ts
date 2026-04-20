@@ -12,6 +12,8 @@ export interface PlantedCell {
   x: number;
   y: number;
   plant: Plant;
+  plantedBy?: string; // user id of the person who planted it
+  plantedAt?: string; // ISO timestamp
 }
 
 export interface GardenBed {
