@@ -52,8 +52,8 @@ export function useGardens() {
       // @ts-ignore
       supabase.from('garden_beds').select('*'),
     ]);
-    const gRows = (gs || []) as GardenRow[];
-    const bRows = (bs || []) as BedRow[];
+    const gRows = (gs || []) as unknown as GardenRow[];
+    const bRows = (bs || []) as unknown as BedRow[];
     setGardens(gRows.map((g) => buildGarden(g, bRows)));
     setLoading(false);
   }, []);
@@ -105,7 +105,7 @@ export async function getGardenById(id: string): Promise<Garden | null> {
     supabase.from('garden_beds').select('*').eq('garden_id', id),
   ]);
   if (!g) return null;
-  return buildGarden(g as GardenRow, (bs || []) as BedRow[]);
+  return buildGarden(g as unknown as GardenRow, (bs || []) as unknown as BedRow[]);
 }
 
 /**
