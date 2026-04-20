@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Garden } from '../types/garden';
 import { GardenPlanner } from '../components/GardenPlanner';
 import { Button } from '../components/ui/button';
-import { ArrowLeft, Edit } from 'lucide-react';
+import { ArrowLeft, Edit, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { getGardenById, syncGardenBeds, ensureFixedLayout } from '@/hooks/useGardens';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +12,7 @@ const GardenDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [garden, setGarden] = useState<Garden | null>(null);
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const isLocalUpdateRef = useRef(false);
 
   const loadGarden = useCallback(async () => {
@@ -81,7 +82,7 @@ const GardenDetail: React.FC = () => {
     <div className="min-h-screen bg-background p-4">
       <div className="w-full space-y-6">
         {/* Header with Navigation */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link to="/">
               <Button variant="outline" size="icon" aria-label="Back to gardens">
@@ -95,12 +96,22 @@ const GardenDetail: React.FC = () => {
               </h1>
             </div>
           </div>
+          <Button
+            onClick={() => setAssistantOpen(true)}
+            className="gap-2"
+            aria-label="Open garden assistant"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span className="hidden sm:inline">Ask the Assistant</span>
+          </Button>
         </div>
 
         {/* Garden Planner */}
         <GardenPlanner
           garden={garden}
           onUpdateGarden={handleUpdateGarden}
+          assistantOpen={assistantOpen}
+          onAssistantOpenChange={setAssistantOpen}
         />
       </div>
     </div>
