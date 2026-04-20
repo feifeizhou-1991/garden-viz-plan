@@ -11,27 +11,44 @@ interface PlantSelectorProps {
   onSelectPlant: (plant: Plant | null) => void;
 }
 
+type FilterType = 'all' | Plant['type'];
+
+const FILTERS: { id: FilterType; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'fruit', label: 'Fruits' },
+  { id: 'leafy', label: 'Leafy' },
+  { id: 'root', label: 'Root' },
+  { id: 'herb', label: 'Herbs' },
+  { id: 'flower', label: 'Flowers' },
+  { id: 'other', label: 'Other' },
+];
+
 export const PlantSelector: React.FC<PlantSelectorProps> = ({
   selectedPlant,
   onSelectPlant
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState<FilterType>('all');
 
   const filteredPlants = useMemo(() => {
-    if (!searchTerm.trim()) return PLANTS;
-    
-    const term = searchTerm.toLowerCase();
-    return PLANTS.filter(plant => 
-      plant.name.toLowerCase().includes(term) ||
-      plant.type.toLowerCase().includes(term)
-    );
-  }, [searchTerm]);
+    const term = searchTerm.trim().toLowerCase();
+    return PLANTS.filter((plant) => {
+      if (filter !== 'all' && plant.type !== filter) return false;
+      if (!term) return true;
+      return (
+        plant.name.toLowerCase().includes(term) ||
+        plant.type.toLowerCase().includes(term)
+      );
+    });
+  }, [searchTerm, filter]);
   const getTypeColor = (type: Plant['type']) => {
     switch (type) {
       case 'leafy': return 'border-l-plant-leafy bg-plant-leafy/10';
       case 'fruit': return 'border-l-plant-fruit bg-plant-fruit/10';
       case 'root': return 'border-l-plant-root bg-plant-root/10';
       case 'herb': return 'border-l-plant-herb bg-plant-herb/10';
+      case 'flower': return 'border-l-pink-400 bg-pink-400/10';
+      case 'other': return 'border-l-emerald-500 bg-emerald-500/10';
       default: return 'border-l-muted bg-muted/10';
     }
   };
@@ -55,7 +72,26 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
           className="pl-10"
         />
       </div>
-      
+
+      {/* Category filter chips */}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {FILTERS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            onClick={() => setFilter(f.id)}
+            className={cn(
+              'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors',
+              filter === f.id
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-muted-foreground border-border hover:bg-muted'
+            )}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       {/* Scrollable Plant Grid */}
       <div className="flex-1 overflow-y-auto pr-2">
         <div className="grid grid-cols-2 gap-3">
