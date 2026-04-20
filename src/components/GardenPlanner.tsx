@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Plant, PlantedCell, Garden } from '../types/garden';
 import { BedManager } from './BedManager';
-import { PlantSelector } from './PlantSelector';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
+import { AssistantDrawer } from './AssistantDrawer';
 import { PlantInfoDialog } from './PlantInfoDialog';
 import { useProfiles } from '@/hooks/useProfiles';
 import { supabase } from '@/integrations/supabase/client';
@@ -138,26 +137,17 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
     []
   );
 
-  const handlePickPlant = useCallback(
-    async (plant: Plant | null) => {
-      if (!plant || !pendingCell) {
-        setPendingCell(null);
-        return;
-      }
+  const handlePlacePlant = useCallback(
+    async (bedId: string, x: number, y: number, plant: Plant) => {
       const beds = garden.beds || [];
-      const bed = beds.find((b) => b.id === pendingCell.bedId);
-      if (!bed) {
-        setPendingCell(null);
-        return;
-      }
+      const bed = beds.find((b) => b.id === bedId);
+      if (!bed) return;
       const { data: userData } = await supabase.auth.getUser();
       const planter = userData.user?.id;
-      const newPlants = bed.plants.filter(
-        (p) => !(p.x === pendingCell.x && p.y === pendingCell.y)
-      );
+      const newPlants = bed.plants.filter((p) => !(p.x === x && p.y === y));
       newPlants.push({
-        x: pendingCell.x,
-        y: pendingCell.y,
+        x,
+        y,
         plant,
         plantedBy: planter,
         plantedAt: new Date().toISOString(),
@@ -167,9 +157,46 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
       );
       handleUpdateGarden({ ...garden, beds: updatedBeds });
       toast.success(`Planted ${plant.name}`);
-      setPendingCell(null);
     },
-    [pendingCell, garden, handleUpdateGarden]
+    [garden, handleUpdateGarden]
+  );
+
+  const handleApplyProposal = useCallback(
+    async (
+      bedId: string,
+      items: { plant: Plant; x: number; y: number }[]
+    ) => {
+      const beds = garden.beds || [];
+      const bed = beds.find((b) => b.id === bedId);
+      if (!bed) return;
+      const { data: userData } = await supabase.auth.getUser();
+      const planter = userData.user?.id;
+      const now = new Date().toISOString();
+      const occupied = new Set(bed.plants.map((p) => `${p.x},${p.y}`));
+      const additions: PlantedCell[] = [];
+      for (const it of items) {
+        const key = `${it.x},${it.y}`;
+        if (occupied.has(key)) continue;
+        occupied.add(key);
+        additions.push({
+          x: it.x,
+          y: it.y,
+          plant: it.plant,
+          plantedBy: planter,
+          plantedAt: now,
+        });
+      }
+      if (!additions.length) {
+        toast.error('All proposed cells are already taken.');
+        return;
+      }
+      const updatedBeds = beds.map((b) =>
+        b.id === bed.id ? { ...b, plants: [...b.plants, ...additions] } : b
+      );
+      handleUpdateGarden({ ...garden, beds: updatedBeds });
+      toast.success(`Planted ${additions.length} plant${additions.length > 1 ? 's' : ''}`);
+    },
+    [garden, handleUpdateGarden]
   );
 
   const handlePlantedCellClick = useCallback(
@@ -216,24 +243,16 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
         onPlantedCellClick={handlePlantedCellClick}
       />
 
-      <Sheet
+      <AssistantDrawer
         open={drawerOpen}
         onOpenChange={(open) => {
           if (!open) setPendingCell(null);
         }}
-      >
-        <SheetContent side="right" className="w-full sm:max-w-md flex flex-col">
-          <SheetHeader>
-            <SheetTitle>Choose a plant</SheetTitle>
-          </SheetHeader>
-          <div className="flex-1 overflow-hidden mt-4">
-            <PlantSelector
-              selectedPlant={null}
-              onSelectPlant={handlePickPlant}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
+        garden={garden}
+        targetCell={pendingCell}
+        onPlacePlant={handlePlacePlant}
+        onApplyProposal={handleApplyProposal}
+      />
 
       <PlantInfoDialog
         open={infoCell !== null}
