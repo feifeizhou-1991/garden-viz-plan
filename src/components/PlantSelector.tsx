@@ -36,21 +36,13 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent, plant: Plant) => {
-    e.dataTransfer.setData('application/json', JSON.stringify({
-      type: 'new-plant',
-      plant
-    }));
-    e.dataTransfer.effectAllowed = 'copy';
-  };
-
   return (
     <div className="h-full flex flex-col">
       <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
         🌱 Plant Selection
       </h3>
       <p className="text-sm text-muted-foreground mb-4">
-        Click to select or drag to plant
+        Click a plant to place it
       </p>
       
       {/* Search Input */}
