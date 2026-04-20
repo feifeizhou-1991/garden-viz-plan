@@ -84,9 +84,8 @@ const GardenDetail: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Button variant="outline" size="icon" aria-label="Back to gardens">
                 <ArrowLeft className="w-4 h-4" />
-                Back to Gardens
               </Button>
             </Link>
             <div>
@@ -94,9 +93,6 @@ const GardenDetail: React.FC = () => {
                 <span>🌿</span>
                 {garden.name}
               </h1>
-              <p className="text-muted-foreground">
-                Created on {garden.createdAt.toLocaleDateString()}
-              </p>
             </div>
           </div>
         </div>
