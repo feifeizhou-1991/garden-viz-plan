@@ -177,7 +177,7 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Sprout className="w-4 h-4" />
                   <span>
-                    {bedName} · cell ({cell.x + 1}, {cell.y + 1})
+                    {bedName} · row {cell.y + 1}, col {cell.x + 1}
                   </span>
                 </div>
               )}

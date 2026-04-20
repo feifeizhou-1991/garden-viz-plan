@@ -235,7 +235,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
           </SheetTitle>
           {targetCell && (
             <SheetDescription>
-              Filling {garden.beds?.find((b) => b.id === targetCell.bedId)?.name ?? 'cell'} ({targetCell.x + 1}, {targetCell.y + 1})
+              Filling {garden.beds?.find((b) => b.id === targetCell.bedId)?.name ?? 'cell'} — row {targetCell.y + 1}, col {targetCell.x + 1}
             </SheetDescription>
           )}
         </SheetHeader>
@@ -293,7 +293,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
                   <ul className="text-xs mb-3 space-y-0.5">
                     {m.proposal.placements.map((p, idx) => (
                       <li key={idx}>
-                        • {p.common_name} → ({p.x + 1}, {p.y + 1})
+                        • {p.common_name} → row {p.y + 1}, col {p.x + 1}
                       </li>
                     ))}
                   </ul>
