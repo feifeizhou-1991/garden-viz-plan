@@ -36,21 +36,13 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent, plant: Plant) => {
-    e.dataTransfer.setData('application/json', JSON.stringify({
-      type: 'new-plant',
-      plant
-    }));
-    e.dataTransfer.effectAllowed = 'copy';
-  };
-
   return (
     <div className="h-full flex flex-col">
       <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
         🌱 Plant Selection
       </h3>
       <p className="text-sm text-muted-foreground mb-4">
-        Click to select or drag to plant
+        Click a plant to place it
       </p>
       
       {/* Search Input */}
@@ -70,7 +62,6 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
         {filteredPlants.map((plant) => (
           <Card
             key={plant.id}
-            draggable
             className={cn(
               "p-4 cursor-pointer transition-all duration-200 hover:shadow-md border-l-4",
               selectedPlant?.id === plant.id 
@@ -79,7 +70,6 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
               getTypeColor(plant.type)
             )}
             onClick={() => onSelectPlant(selectedPlant?.id === plant.id ? null : plant)}
-            onDragStart={(e) => handleDragStart(e, plant)}
           >
             <div className="text-center space-y-2">
               <div className="w-12 h-12 mx-auto overflow-hidden rounded-lg bg-white/10 flex items-center justify-center">
