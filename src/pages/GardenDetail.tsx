@@ -5,7 +5,7 @@ import { GardenPlanner } from '../components/GardenPlanner';
 import { Button } from '../components/ui/button';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { toast } from 'sonner';
-import { getGardenById, syncGardenBeds } from '@/hooks/useGardens';
+import { getGardenById, syncGardenBeds, ensureFixedLayout } from '@/hooks/useGardens';
 import { supabase } from '@/integrations/supabase/client';
 
 const GardenDetail: React.FC = () => {
@@ -22,7 +22,10 @@ const GardenDetail: React.FC = () => {
       navigate('/');
       return;
     }
-    setGarden(found);
+    // Ensure the fixed bed layout exists for this garden, then reload.
+    await ensureFixedLayout(found);
+    const refreshed = await getGardenById(id);
+    setGarden(refreshed || found);
   }, [id, navigate]);
 
   useEffect(() => {
