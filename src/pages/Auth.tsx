@@ -2,12 +2,25 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { toast } from 'sonner';
+import { z } from 'zod';
+import { useState } from 'react';
+
+const credentialsSchema = z.object({
+  email: z.string().trim().email({ message: 'Invalid email address' }).max(255),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }).max(72),
+});
 
 const Auth: React.FC = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -25,6 +38,37 @@ const Auth: React.FC = () => {
     });
     if (result.error) {
       toast.error(result.error.message || 'Failed to sign in');
+    }
+  };
+
+  const handleEmailAuth = async (mode: 'signin' | 'signup') => {
+    const parsed = credentialsSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    setLoading(true);
+    try {
+      if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({
+          email: parsed.data.email,
+          password: parsed.data.password,
+          options: { emailRedirectTo: `${window.location.origin}/` },
+        });
+        if (error) throw error;
+        toast.success('Account created! Check your email to confirm.');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: parsed.data.email,
+          password: parsed.data.password,
+        });
+        if (error) throw error;
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Authentication failed';
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,6 +90,48 @@ const Auth: React.FC = () => {
             </svg>
             Continue with Google
           </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or with email</span>
+            </div>
+          </div>
+
+          <Tabs defaultValue="signin" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="signin">Sign in</TabsTrigger>
+              <TabsTrigger value="signup">Sign up</TabsTrigger>
+            </TabsList>
+            <TabsContent value="signin" className="space-y-3 pt-3">
+              <div className="space-y-2">
+                <Label htmlFor="signin-email">Email</Label>
+                <Input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signin-password">Password</Label>
+                <Input id="signin-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />
+              </div>
+              <Button onClick={() => handleEmailAuth('signin')} disabled={loading} className="w-full">
+                {loading ? 'Signing in…' : 'Sign in'}
+              </Button>
+            </TabsContent>
+            <TabsContent value="signup" className="space-y-3 pt-3">
+              <div className="space-y-2">
+                <Label htmlFor="signup-email">Email</Label>
+                <Input id="signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signup-password">Password</Label>
+                <Input id="signup-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+              </div>
+              <Button onClick={() => handleEmailAuth('signup')} disabled={loading} className="w-full">
+                {loading ? 'Creating account…' : 'Create account'}
+              </Button>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>
