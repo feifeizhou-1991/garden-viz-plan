@@ -27,17 +27,22 @@ function initials(p: Profile | undefined, fallback: string): string {
 export const PlanterAvatars: React.FC<PlanterAvatarsProps> = ({ garden, max = 5 }) => {
   const { profiles } = useProfiles();
 
-  // Aggregate unique planter ids + their plant count, sorted by most plants first
+  // Aggregate unique plant species per planter, sorted by most species first
   const planters = useMemo(() => {
-    const counts = new Map<string, number>();
+    const speciesByUser = new Map<string, Set<string>>();
     (garden.beds ?? []).forEach((bed) => {
       bed.plants.forEach((p) => {
-        if (p.plantedBy) counts.set(p.plantedBy, (counts.get(p.plantedBy) ?? 0) + 1);
+        if (!p.plantedBy) return;
+        const speciesKey = p.slug || p.plant.id || p.plant.name;
+        if (!speciesByUser.has(p.plantedBy)) {
+          speciesByUser.set(p.plantedBy, new Set());
+        }
+        speciesByUser.get(p.plantedBy)!.add(speciesKey);
       });
     });
-    return Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([userId, count]) => ({ userId, count, profile: profiles[userId] }));
+    return Array.from(speciesByUser.entries())
+      .map(([userId, set]) => ({ userId, count: set.size, profile: profiles[userId] }))
+      .sort((a, b) => b.count - a.count);
   }, [garden.beds, profiles]);
 
   if (planters.length === 0) return null;
@@ -66,7 +71,7 @@ export const PlanterAvatars: React.FC<PlanterAvatarsProps> = ({ garden, max = 5 
                 <div className="text-xs">
                   <div className="font-medium">{label}</div>
                   <div className="text-muted-foreground">
-                    {count} plant{count === 1 ? '' : 's'}
+                    {count} unique species
                   </div>
                 </div>
               </TooltipContent>
