@@ -9,7 +9,7 @@ interface GardenGridProps {
   plants: PlantedCell[];
   onPlantCell: (x: number, y: number, plant: Plant) => void;
   onRemoveCell: (x: number, y: number) => void;
-  onMovePlant: (fromX: number, fromY: number, toX: number, toY: number) => void;
+  onMovePlant?: (fromX: number, fromY: number, toX: number, toY: number) => void;
   onEmptyCellClick?: (x: number, y: number) => void;
 }
 
@@ -20,12 +20,9 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
   plants,
   onPlantCell,
   onRemoveCell,
-  onMovePlant,
   onEmptyCellClick,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
-  const [draggedOverCell, setDraggedOverCell] = useState<{ x: number; y: number } | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
 
   const getPlantAtCell = useCallback((x: number, y: number) => {
     return plants.find(p => p.x === x && p.y === y);
@@ -43,68 +40,6 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
     }
   }, [selectedPlant, getPlantAtCell, onPlantCell, onRemoveCell, onEmptyCellClick]);
 
-  const handleDragStart = (e: React.DragEvent, x: number, y: number) => {
-    const plant = getPlantAtCell(x, y);
-    if (plant) {
-      e.dataTransfer.setData('application/json', JSON.stringify({
-        type: 'existing-plant',
-        x,
-        y,
-        plant: plant.plant
-      }));
-      e.dataTransfer.effectAllowed = 'move';
-      setIsDragging(true);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent, x: number, y: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-    setDraggedOverCell({ x, y });
-  };
-
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    // Only clear if we're actually leaving the cell, not moving to a child element
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      setDraggedOverCell(null);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent, x: number, y: number) => {
-    e.preventDefault();
-    setDraggedOverCell(null);
-    setIsDragging(false);
-
-    try {
-      const data = JSON.parse(e.dataTransfer.getData('application/json'));
-      
-      if (data.type === 'new-plant') {
-        // Placing a new plant from the selector
-        const existingPlant = getPlantAtCell(x, y);
-        if (!existingPlant) {
-          onPlantCell(x, y, data.plant);
-        }
-      } else if (data.type === 'existing-plant') {
-        // Moving an existing plant
-        const targetPlant = getPlantAtCell(x, y);
-        if (!targetPlant && (data.x !== x || data.y !== y)) {
-          onMovePlant(data.x, data.y, x, y);
-        }
-      }
-    } catch (error) {
-      console.error('Error handling drop:', error);
-    }
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    setDraggedOverCell(null);
-  };
-
   const renderGrid = () => {
     const cells = [];
     
@@ -112,7 +47,6 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
       for (let x = 0; x < width; x++) {
         const plantedCell = getPlantAtCell(x, y);
         const isHovered = hoveredCell?.x === x && hoveredCell?.y === y;
-        const isDraggedOver = draggedOverCell?.x === x && draggedOverCell?.y === y;
         
         cells.push(
           <div
@@ -121,36 +55,22 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
               "w-16 h-16 border border-grid-line bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
               isHovered && !plantedCell && "bg-grid-hover",
               plantedCell && "bg-grid-occupied",
-              selectedPlant && !plantedCell && "hover:bg-grid-hover",
-              isDraggedOver && !plantedCell && "bg-primary/20 border-primary scale-105",
-              isDragging && plantedCell && "opacity-50"
+              selectedPlant && !plantedCell && "hover:bg-grid-hover"
             )}
             onClick={() => handleCellClick(x, y)}
             onMouseEnter={() => setHoveredCell({ x, y })}
             onMouseLeave={() => setHoveredCell(null)}
-            onDragStart={(e) => handleDragStart(e, x, y)}
-            onDragOver={(e) => handleDragOver(e, x, y)}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => handleDrop(e, x, y)}
-            onDragEnd={handleDragEnd}
           >
             {plantedCell && (
-              <div 
-                className="select-none cursor-move w-full h-full flex items-center justify-center" 
-                title={`${plantedCell.plant.name} (drag to move)`}
-                draggable
+              <div
+                className="select-none w-full h-full flex items-center justify-center"
+                title={plantedCell.plant.name}
               >
                 <img 
                   src={plantedCell.plant.icon} 
                   alt={plantedCell.plant.name} 
                   className="w-12 h-12 object-cover rounded-sm pointer-events-none"
                 />
-              </div>
-            )}
-            {isDraggedOver && !plantedCell && (
-              <div className="absolute inset-0 bg-primary/10 rounded flex items-center justify-center">
-                <span className="text-sm text-primary">Drop here</span>
               </div>
             )}
           </div>
