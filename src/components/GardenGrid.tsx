@@ -10,6 +10,7 @@ interface GardenGridProps {
   onPlantCell: (x: number, y: number, plant: Plant) => void;
   onRemoveCell: (x: number, y: number) => void;
   onMovePlant: (fromX: number, fromY: number, toX: number, toY: number) => void;
+  onEmptyCellClick?: (x: number, y: number) => void;
 }
 
 export const GardenGrid: React.FC<GardenGridProps> = ({
@@ -19,7 +20,8 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
   plants,
   onPlantCell,
   onRemoveCell,
-  onMovePlant
+  onMovePlant,
+  onEmptyCellClick,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const [draggedOverCell, setDraggedOverCell] = useState<{ x: number; y: number } | null>(null);
@@ -36,8 +38,10 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
       onRemoveCell(x, y);
     } else if (selectedPlant) {
       onPlantCell(x, y, selectedPlant);
+    } else if (onEmptyCellClick) {
+      onEmptyCellClick(x, y);
     }
-  }, [selectedPlant, getPlantAtCell, onPlantCell, onRemoveCell]);
+  }, [selectedPlant, getPlantAtCell, onPlantCell, onRemoveCell, onEmptyCellClick]);
 
   const handleDragStart = (e: React.DragEvent, x: number, y: number) => {
     const plant = getPlantAtCell(x, y);

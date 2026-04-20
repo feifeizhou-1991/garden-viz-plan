@@ -1,10 +1,8 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Plant, PlantedCell, Garden } from '../types/garden';
 import { BedManager } from './BedManager';
 import { PlantSelector } from './PlantSelector';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Download, RotateCcw } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
 import { toast } from 'sonner';
 
 interface GardenPlannerProps {
@@ -14,6 +12,8 @@ interface GardenPlannerProps {
 
 export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGarden }) => {
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
+  const [pendingCell, setPendingCell] = useState<{ bedId: string; x: number; y: number } | null>(null);
+  const drawerOpen = pendingCell !== null;
 
   // Initialize beds if they don't exist (backward compatibility)
   const ensureGardenHasBeds = useCallback((gardenToUpdate: Garden) => {
@@ -126,29 +126,67 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
   const typeCounts = getPlantTypeCounts();
   const totalPlants = getAllPlants().length;
 
+  const handleEmptyCellClick = useCallback(
+    (bedId: string, x: number, y: number) => {
+      setPendingCell({ bedId, x, y });
+    },
+    []
+  );
+
+  const handlePickPlant = useCallback(
+    (plant: Plant | null) => {
+      if (!plant || !pendingCell) {
+        setPendingCell(null);
+        return;
+      }
+      const beds = garden.beds || [];
+      const bed = beds.find((b) => b.id === pendingCell.bedId);
+      if (!bed) {
+        setPendingCell(null);
+        return;
+      }
+      const newPlants = bed.plants.filter(
+        (p) => !(p.x === pendingCell.x && p.y === pendingCell.y)
+      );
+      newPlants.push({ x: pendingCell.x, y: pendingCell.y, plant });
+      const updatedBeds = beds.map((b) =>
+        b.id === bed.id ? { ...b, plants: newPlants } : b
+      );
+      handleUpdateGarden({ ...garden, beds: updatedBeds });
+      toast.success(`Planted ${plant.name}`);
+      setPendingCell(null);
+    },
+    [pendingCell, garden, handleUpdateGarden]
+  );
+
   return (
-    <div className="flex flex-col xl:flex-row gap-8 h-[calc(100vh-12rem)]">
-      {/* Garden Beds - Left Side */}
-      <div className="flex-1 overflow-hidden">
-        <BedManager
-          garden={garden}
-          selectedPlant={selectedPlant}
-          onUpdateGarden={handleUpdateGarden}
-          onClearAllBeds={clearAllBeds}
-        />
-      </div>
-      
-      {/* Plant Selector - Right Side */}
-      <div className="w-full xl:w-80 h-full">
-        <Card className="h-full flex flex-col">
-          <CardContent className="pt-6 flex-1 overflow-hidden">
+    <div className="h-[calc(100vh-12rem)]">
+      <BedManager
+        garden={garden}
+        selectedPlant={selectedPlant}
+        onUpdateGarden={handleUpdateGarden}
+        onClearAllBeds={clearAllBeds}
+        onEmptyCellClick={handleEmptyCellClick}
+      />
+
+      <Sheet
+        open={drawerOpen}
+        onOpenChange={(open) => {
+          if (!open) setPendingCell(null);
+        }}
+      >
+        <SheetContent side="right" className="w-full sm:max-w-md flex flex-col">
+          <SheetHeader>
+            <SheetTitle>Choose a plant</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-hidden mt-4">
             <PlantSelector
-              selectedPlant={selectedPlant}
-              onSelectPlant={setSelectedPlant}
+              selectedPlant={null}
+              onSelectPlant={handlePickPlant}
             />
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
