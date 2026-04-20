@@ -10,13 +10,20 @@ import { toast } from 'sonner';
 interface GardenPlannerProps {
   garden: Garden;
   onUpdateGarden: (garden: Garden) => void;
+  assistantOpen?: boolean;
+  onAssistantOpenChange?: (open: boolean) => void;
 }
 
-export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGarden }) => {
+export const GardenPlanner: React.FC<GardenPlannerProps> = ({
+  garden,
+  onUpdateGarden,
+  assistantOpen,
+  onAssistantOpenChange,
+}) => {
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [pendingCell, setPendingCell] = useState<{ bedId: string; x: number; y: number } | null>(null);
   const [infoCell, setInfoCell] = useState<{ bedId: string; x: number; y: number } | null>(null);
-  const drawerOpen = pendingCell !== null;
+  const drawerOpen = pendingCell !== null || !!assistantOpen;
   const { profiles } = useProfiles();
 
   // Initialize beds if they don't exist (backward compatibility)
@@ -246,7 +253,10 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({ garden, onUpdateGa
       <AssistantDrawer
         open={drawerOpen}
         onOpenChange={(open) => {
-          if (!open) setPendingCell(null);
+          if (!open) {
+            setPendingCell(null);
+            onAssistantOpenChange?.(false);
+          }
         }}
         garden={garden}
         targetCell={pendingCell}
