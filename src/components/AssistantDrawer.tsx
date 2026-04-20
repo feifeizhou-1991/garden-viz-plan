@@ -144,7 +144,19 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         },
       });
 
-      if (error) throw error;
+      // supabase.functions.invoke wraps non-2xx responses in `error` but the
+      // JSON body (with our friendly message) is on error.context.
+      if (error) {
+        let friendly = error.message;
+        try {
+          const ctx: any = (error as any).context;
+          if (ctx && typeof ctx.json === 'function') {
+            const body = await ctx.json();
+            if (body?.error) friendly = body.error;
+          }
+        } catch { /* ignore */ }
+        throw new Error(friendly);
+      }
       if ((data as any)?.error) throw new Error((data as any).error);
 
       const widgets = (data?.widgets ?? {}) as Record<string, any>;
