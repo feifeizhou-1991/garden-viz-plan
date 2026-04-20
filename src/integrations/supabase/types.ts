@@ -94,6 +94,45 @@ export type Database = {
         }
         Relationships: []
       }
+      plant_catalog: {
+        Row: {
+          category: string
+          common_name: string
+          created_at: string
+          description: string | null
+          image_url: string | null
+          scientific_name: string | null
+          season: string[]
+          slug: string
+          spacing: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          common_name: string
+          created_at?: string
+          description?: string | null
+          image_url?: string | null
+          scientific_name?: string | null
+          season?: string[]
+          slug: string
+          spacing?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          common_name?: string
+          created_at?: string
+          description?: string | null
+          image_url?: string | null
+          scientific_name?: string | null
+          season?: string[]
+          slug?: string
+          spacing?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
