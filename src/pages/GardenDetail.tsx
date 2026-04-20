@@ -1,55 +1,67 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Garden } from '../types/garden';
 import { GardenPlanner } from '../components/GardenPlanner';
 import { Button } from '../components/ui/button';
 import { ArrowLeft, Edit } from 'lucide-react';
 import { toast } from 'sonner';
-
-// Get gardens from localStorage
-const getStoredGardens = (): Garden[] => {
-  const stored = localStorage.getItem('gardens');
-  if (stored) {
-    const parsed = JSON.parse(stored);
-    return parsed.map((g: any) => ({
-      ...g,
-      createdAt: new Date(g.createdAt)
-    }));
-  }
-  return [];
-};
+import { getGardenById, syncGardenBeds } from '@/hooks/useGardens';
+import { supabase } from '@/integrations/supabase/client';
 
 const GardenDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [garden, setGarden] = useState<Garden | null>(null);
+  const isLocalUpdateRef = useRef(false);
 
-  useEffect(() => {
-    const gardens = getStoredGardens();
-    console.log('Available gardens:', gardens);
-    console.log('Looking for garden with id:', id);
-    
-    const foundGarden = gardens.find(g => g.id === id);
-    
-    if (!foundGarden) {
-      console.error('Garden not found with id:', id);
+  const loadGarden = useCallback(async () => {
+    if (!id) return;
+    const found = await getGardenById(id);
+    if (!found) {
       toast.error('Garden not found');
       navigate('/');
       return;
     }
-    
-    console.log('Found garden:', foundGarden);
-    setGarden(foundGarden);
+    setGarden(found);
   }, [id, navigate]);
 
-  const handleUpdateGarden = useCallback((updatedGarden: Garden) => {
-    const gardens = getStoredGardens();
-    const updatedGardens = gardens.map(g =>
-      g.id === updatedGarden.id ? updatedGarden : g
-    );
-    
-    localStorage.setItem('gardens', JSON.stringify(updatedGardens));
+  useEffect(() => {
+    loadGarden();
+    if (!id) return;
+    const channel = supabase
+      .channel(`garden-${id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'garden_beds', filter: `garden_id=eq.${id}` },
+        () => {
+          if (isLocalUpdateRef.current) return;
+          loadGarden();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'gardens', filter: `id=eq.${id}` },
+        () => loadGarden()
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, loadGarden]);
+
+  const handleUpdateGarden = useCallback(async (updatedGarden: Garden) => {
     setGarden(updatedGarden);
+    isLocalUpdateRef.current = true;
+    try {
+      await syncGardenBeds(updatedGarden);
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to save changes');
+    } finally {
+      // Allow realtime updates again shortly after our own write settles
+      setTimeout(() => {
+        isLocalUpdateRef.current = false;
+      }, 500);
+    }
   }, []);
 
   if (!garden) {
