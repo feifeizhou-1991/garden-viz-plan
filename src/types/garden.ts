@@ -1,7 +1,7 @@
 export interface Plant {
   id: string;
   name: string;
-  type: 'leafy' | 'fruit' | 'root' | 'herb';
+  type: 'leafy' | 'fruit' | 'root' | 'herb' | 'flower' | 'other';
   color: string;
   icon: string;
   spacing: number; // grid cells needed
