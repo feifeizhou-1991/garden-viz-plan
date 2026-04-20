@@ -23,7 +23,7 @@ const getStoredGardens = (): Garden[] => {
   return [
     {
       id: 'default',
-      name: 'My First Garden',
+      name: 'Garden 2026',
       plot: {
         width: 12,
         height: 8,
@@ -132,114 +132,130 @@ const GardensOverview: React.FC = () => {
           </p>
         </div>
 
-        {/* Create New Garden */}
-        <div className="flex justify-center">
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button size="lg" className="flex items-center gap-2">
-                <Plus className="w-5 h-5" />
-                Create New Garden
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Garden</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Input
-                  value={newGardenName}
-                  onChange={(e) => setNewGardenName(e.target.value)}
-                  placeholder="Enter garden name"
-                  onKeyDown={(e) => e.key === 'Enter' && handleCreateGarden()}
-                />
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleCreateGarden}>
-                    Create Garden
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+        {/* Timeline */}
+        <div className="max-w-2xl mx-auto relative">
+          {/* Vertical line */}
+          <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-border" aria-hidden="true" />
 
-        {/* Gardens Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {gardens.map((garden) => (
-            <Card key={garden.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
-              <Link to={`/garden/${garden.id}`} className="block">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <CardTitle className="text-lg">{garden.name}</CardTitle>
-                      <CardDescription className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        {garden.createdAt.toLocaleDateString()}
-                      </CardDescription>
+          <ul className="space-y-8">
+            {gardens
+              .slice()
+              .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+              .map((garden) => (
+                <li key={garden.id} className="relative pl-16 group">
+                  {/* Dot */}
+                  <span className="absolute left-4 top-6 w-5 h-5 rounded-full bg-primary border-4 border-background ring-2 ring-primary" />
+
+                  <Card className="hover:shadow-lg transition-shadow relative">
+                    <Link to={`/garden/${garden.id}`} className="block">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <CardTitle className="text-lg">{garden.name}</CardTitle>
+                            <CardDescription className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4" />
+                              {garden.createdAt.toLocaleDateString()}
+                            </CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent />
+                    </Link>
+
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8 w-8 p-0"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              startEditing(garden);
+                            }}
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Rename Garden</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <Input
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              placeholder="Enter new garden name"
+                              onKeyDown={(e) => e.key === 'Enter' && handleRenameGarden()}
+                            />
+                            <div className="flex justify-end gap-2">
+                              <Button variant="outline" onClick={() => setEditingGarden(null)}>
+                                Cancel
+                              </Button>
+                              <Button onClick={handleRenameGarden}>
+                                Rename
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+
+                      {gardens.length > 1 && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 w-8 p-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDeleteGarden(garden);
+                          }}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                </li>
+              ))}
+
+            {/* Empty slot to create a new garden */}
+            <li className="relative pl-16">
+              <span className="absolute left-4 top-6 w-5 h-5 rounded-full bg-background border-2 border-dashed border-muted-foreground" />
+
+              <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    className="w-full rounded-lg border-2 border-dashed border-muted-foreground/40 bg-card/30 hover:bg-card hover:border-primary transition-colors p-6 flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span className="font-medium">Create new garden</span>
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create New Garden</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input
+                      value={newGardenName}
+                      onChange={(e) => setNewGardenName(e.target.value)}
+                      placeholder="Enter garden name"
+                      onKeyDown={(e) => e.key === 'Enter' && handleCreateGarden()}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleCreateGarden}>
+                        Create Garden
+                      </Button>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                </CardContent>
-              </Link>
-              
-              {/* Garden Actions */}
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 w-8 p-0"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        startEditing(garden);
-                      }}
-                    >
-                      <Pencil className="w-3 h-3" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Rename Garden</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <Input
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        placeholder="Enter new garden name"
-                        onKeyDown={(e) => e.key === 'Enter' && handleRenameGarden()}
-                      />
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setEditingGarden(null)}>
-                          Cancel
-                        </Button>
-                        <Button onClick={handleRenameGarden}>
-                          Rename
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                
-                {gardens.length > 1 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-8 w-8 p-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleDeleteGarden(garden);
-                    }}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                )}
-              </div>
-            </Card>
-          ))}
+                </DialogContent>
+              </Dialog>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
