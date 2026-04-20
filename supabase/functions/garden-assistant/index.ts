@@ -57,6 +57,18 @@ const TOOLS = [
                 },
                 spacing: { type: "integer", minimum: 1, maximum: 4, description: "Cells the plant occupies, 1-4." },
                 description: { type: "string", description: "1-2 sentence growing tip." },
+                days_to_harvest_min: { type: "integer", description: "Typical minimum days from planting to first harvest." },
+                days_to_harvest_max: { type: "integer", description: "Typical maximum days from planting to first harvest." },
+                harvest_season: {
+                  type: "array",
+                  items: { type: "string", enum: ["Spring", "Summer", "Fall", "Winter"] },
+                  description: "Seasons in which this plant is typically harvested.",
+                },
+                sun: { type: "string", enum: ["Full sun", "Partial shade", "Shade"] },
+                water: { type: "string", enum: ["Low", "Medium", "High"] },
+                planting_depth_cm: { type: "number", description: "Recommended planting depth in cm." },
+                companions: { type: "array", items: { type: "string" }, description: "Common companion plants." },
+                avoid: { type: "array", items: { type: "string" }, description: "Plants to avoid planting nearby." },
               },
               required: ["common_name", "category", "season", "spacing"],
             },
@@ -105,6 +117,7 @@ RULES:
 - When the user wants you to actually plant something, call \`propose_placement\` using the bed information from the GARDEN CONTEXT below. Pick coordinates only from the listed FREE cells. Never overlap existing plants.
 - Keep chat replies short (1-3 sentences). The plant cards / placement proposals do most of the talking.
 - Use the user's language (English, Dutch, etc.).
+- When calling \`suggest_plants\`, ALWAYS include realistic growing details for each plant: days_to_harvest_min/max, harvest_season, sun, water, planting_depth_cm, companions (2-4), avoid (0-2). Use temperate-climate norms when uncertain.
 - Never invent fake plants. If you're not sure something is a real garden plant, don't include it.`;
 
 async function handleSuggestPlants(
@@ -117,6 +130,14 @@ async function handleSuggestPlants(
     season: string[];
     spacing: number;
     description?: string;
+    days_to_harvest_min?: number;
+    days_to_harvest_max?: number;
+    harvest_season?: string[];
+    sun?: string;
+    water?: string;
+    planting_depth_cm?: number;
+    companions?: string[];
+    avoid?: string[];
   }> }
 ) {
   const results: Array<{
@@ -176,6 +197,14 @@ async function handleSuggestPlants(
       spacing: Math.min(Math.max(p.spacing ?? 1, 1), 4),
       description: p.description ?? null,
       image_url: imageUrl,
+      days_to_harvest_min: p.days_to_harvest_min ?? null,
+      days_to_harvest_max: p.days_to_harvest_max ?? null,
+      harvest_season: p.harvest_season ?? [],
+      sun: p.sun ?? null,
+      water: p.water ?? null,
+      planting_depth_cm: p.planting_depth_cm ?? null,
+      companions: p.companions ?? [],
+      avoid: p.avoid ?? [],
     };
 
     const { data: upserted } = await admin

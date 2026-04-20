@@ -96,40 +96,64 @@ export type Database = {
       }
       plant_catalog: {
         Row: {
+          avoid: string[]
           category: string
           common_name: string
+          companions: string[]
           created_at: string
+          days_to_harvest_max: number | null
+          days_to_harvest_min: number | null
           description: string | null
+          harvest_season: string[]
           image_url: string | null
+          planting_depth_cm: number | null
           scientific_name: string | null
           season: string[]
           slug: string
           spacing: number
+          sun: string | null
           updated_at: string
+          water: string | null
         }
         Insert: {
+          avoid?: string[]
           category: string
           common_name: string
+          companions?: string[]
           created_at?: string
+          days_to_harvest_max?: number | null
+          days_to_harvest_min?: number | null
           description?: string | null
+          harvest_season?: string[]
           image_url?: string | null
+          planting_depth_cm?: number | null
           scientific_name?: string | null
           season?: string[]
           slug: string
           spacing?: number
+          sun?: string | null
           updated_at?: string
+          water?: string | null
         }
         Update: {
+          avoid?: string[]
           category?: string
           common_name?: string
+          companions?: string[]
           created_at?: string
+          days_to_harvest_max?: number | null
+          days_to_harvest_min?: number | null
           description?: string | null
+          harvest_season?: string[]
           image_url?: string | null
+          planting_depth_cm?: number | null
           scientific_name?: string | null
           season?: string[]
           slug?: string
           spacing?: number
+          sun?: string | null
           updated_at?: string
+          water?: string | null
         }
         Relationships: []
       }
