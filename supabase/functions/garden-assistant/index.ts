@@ -120,6 +120,19 @@ RULES:
 - When calling \`suggest_plants\`, ALWAYS include realistic growing details for each plant: days_to_harvest_min/max, harvest_season, sun, water, planting_depth_cm, companions (2-4), avoid (0-2). Use temperate-climate norms when uncertain.
 - Never invent fake plants. If you're not sure something is a real garden plant, don't include it.`;
 
+const COORDINATE_RULES = `
+
+COORDINATES (CRITICAL):
+- The UI shows positions to users as "row R, col C" (1-indexed, row first).
+- When the user writes a pair like "(2, 3)", "2,3", "row 2 col 3", or "place at 2 3", they mean row=2, col=3 (1-indexed).
+- The \`propose_placement\` tool expects ZERO-indexed coordinates as separate fields x (column) and y (row).
+- Conversion: user "row R, col C" (1-indexed) → x = C - 1, y = R - 1.
+- Example: user says "place a tomato at (2, 3)" → that means row 2, col 3 → emit { x: 2, y: 1 }.
+- Never swap x and y. Never treat the first number the user gives as a column.
+- The GARDEN CONTEXT \`free\` and \`occupied\` arrays already use zero-indexed { x, y } — do NOT shift them.`;
+
+const FULL_SYSTEM_PROMPT = SYSTEM_PROMPT + COORDINATE_RULES;
+
 async function handleSuggestPlants(
   admin: ReturnType<typeof createClient>,
   supabaseUrl: string,
@@ -241,7 +254,7 @@ Deno.serve(async (req) => {
     const contextMsg: ChatMsg = {
       role: "system",
       content:
-        SYSTEM_PROMPT +
+        FULL_SYSTEM_PROMPT +
         (garden_context
           ? `\n\nGARDEN CONTEXT:\n${JSON.stringify(garden_context).slice(0, 4000)}`
           : ""),
