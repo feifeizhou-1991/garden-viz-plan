@@ -37,7 +37,9 @@ const getStoredGardens = (): Garden[] => {
 const GardensOverview: React.FC = () => {
   const navigate = useNavigate();
   const [gardens, setGardens] = useState<Garden[]>(() => {
-    const stored = getStoredGardens();
+    const stored = getStoredGardens().map((g) =>
+      g.name === 'My First Garden' ? { ...g, name: 'Garden 2026' } : g
+    );
     // Ensure gardens are always saved to localStorage
     localStorage.setItem('gardens', JSON.stringify(stored));
     return stored;
@@ -117,7 +119,7 @@ const GardensOverview: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-20">
         <div className="flex justify-end">
           <Button variant="outline" size="sm" onClick={handleSignOut}>
             <LogOut className="w-4 h-4" />
