@@ -245,7 +245,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
 
       <CardContent className="flex-1 overflow-hidden">
         <div
-          className="relative border-2 border-dashed border-muted-foreground/20 rounded-lg bg-muted/5 h-full cursor-grab active:cursor-grabbing touch-none overscroll-contain"
+          className="relative rounded-lg bg-muted/5 h-full cursor-grab active:cursor-grabbing touch-none overscroll-contain"
           onMouseDown={handlePanStart}
           onTouchStart={handlePanStart}
           onTouchMove={handleTouchMove}
