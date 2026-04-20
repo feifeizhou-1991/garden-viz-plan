@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Garden, GardenBed, PlantedCell } from '@/types/garden';
+import { FIXED_BED_LAYOUT } from '@/data/fixedBedLayout';
 
 type GardenRow = {
   id: string;
@@ -106,6 +107,63 @@ export async function getGardenById(id: string): Promise<Garden | null> {
   ]);
   if (!g) return null;
   return buildGarden(g as unknown as GardenRow, (bs || []) as unknown as BedRow[]);
+}
+
+/**
+ * Ensure the garden has the fixed bed layout. Reconciles by name:
+ * - inserts beds that are missing
+ * - updates position/size of existing beds to match the template
+ * Existing plants are preserved on matching beds.
+ * Beds whose name is not part of the template are left untouched.
+ */
+export async function ensureFixedLayout(garden: Garden): Promise<void> {
+  const existing = garden.beds || [];
+  const byName = new Map(existing.map((b) => [b.name, b]));
+
+  const inserts: any[] = [];
+  const updates: { id: string; patch: any }[] = [];
+
+  for (const tpl of FIXED_BED_LAYOUT) {
+    const found = byName.get(tpl.name);
+    if (!found) {
+      inserts.push({
+        garden_id: garden.id,
+        name: tpl.name,
+        width: tpl.width,
+        height: tpl.height,
+        x: tpl.x,
+        y: tpl.y,
+        pinned: true,
+        plants: [],
+      });
+    } else if (
+      found.width !== tpl.width ||
+      found.height !== tpl.height ||
+      found.x !== tpl.x ||
+      found.y !== tpl.y ||
+      !found.pinned
+    ) {
+      updates.push({
+        id: found.id,
+        patch: {
+          width: tpl.width,
+          height: tpl.height,
+          x: tpl.x,
+          y: tpl.y,
+          pinned: true,
+        },
+      });
+    }
+  }
+
+  if (inserts.length) {
+    // @ts-ignore
+    await supabase.from('garden_beds').insert(inserts);
+  }
+  for (const u of updates) {
+    // @ts-ignore
+    await supabase.from('garden_beds').update(u.patch).eq('id', u.id);
+  }
 }
 
 /**
