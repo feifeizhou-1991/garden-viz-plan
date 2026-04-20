@@ -5,8 +5,10 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Plus, Calendar, Grid3x3, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Calendar, Grid3x3, Pencil, Trash2, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 // Get gardens from localStorage or return default
 const getStoredGardens = (): Garden[] => {
@@ -33,6 +35,7 @@ const getStoredGardens = (): Garden[] => {
 };
 
 const GardensOverview: React.FC = () => {
+  const navigate = useNavigate();
   const [gardens, setGardens] = useState<Garden[]>(() => {
     const stored = getStoredGardens();
     // Ensure gardens are always saved to localStorage
@@ -107,9 +110,20 @@ const GardensOverview: React.FC = () => {
     setEditName(garden.name);
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth', { replace: true });
+  };
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-8">
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" onClick={handleSignOut}>
+            <LogOut className="w-4 h-4" />
+            Sign out
+          </Button>
+        </div>
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-foreground">🌿 Groene Kaap Community Garden</h1>
