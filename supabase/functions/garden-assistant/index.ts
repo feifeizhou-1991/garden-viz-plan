@@ -117,11 +117,8 @@ RULES:
 - When the user wants you to actually plant something, call \`propose_placement\` using the bed information from the GARDEN CONTEXT below. Pick coordinates only from the listed FREE cells. Never overlap existing plants.
 - Keep chat replies short (1-3 sentences). The plant cards / placement proposals do most of the talking.
 - Use the user's language (English, Dutch, etc.).
+- When calling \`suggest_plants\`, ALWAYS include realistic growing details for each plant: days_to_harvest_min/max, harvest_season, sun, water, planting_depth_cm, companions (2-4), avoid (0-2). Use temperate-climate norms when uncertain.
 - Never invent fake plants. If you're not sure something is a real garden plant, don't include it.`;
-
-// When suggesting plants, ALWAYS include realistic growing details:
-// days_to_harvest_min/max, harvest_season, sun, water, planting_depth_cm,
-// companions (2-4), avoid (0-2). Use temperate-climate norms when uncertain.
 
 async function handleSuggestPlants(
   admin: ReturnType<typeof createClient>,
