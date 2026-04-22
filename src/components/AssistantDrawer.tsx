@@ -287,14 +287,15 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">
         <SheetHeader className="px-4 pt-4 pb-3 border-b flex-shrink-0">
-          <SheetTitle className="sr-only">Add plants</SheetTitle>
           <SheetDescription className="sr-only">
             {targetCell
               ? `Filling ${garden.beds?.find((b) => b.id === targetCell.bedId)?.name ?? 'cell'} — row ${targetCell.y + 1}, col ${targetCell.x + 1}`
               : 'Pick a plant or ask the assistant for ideas.'}
           </SheetDescription>
 
-          <div className="h-8" aria-hidden="true" />
+          <div className="h-8 flex items-center pr-10">
+            <SheetTitle className="text-base font-semibold">Add plants</SheetTitle>
+          </div>
 
           {/* Search / Ask AI bar */}
           <form
