@@ -3,7 +3,7 @@ import { Garden, GardenBed, Plant } from '../types/garden';
 import { GardenGrid } from './GardenGrid';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader } from './ui/card';
-import { ZoomIn, ZoomOut, RotateCcw, MousePointerSquareDashed, X, Plus } from 'lucide-react';
+import { ZoomIn, ZoomOut, MousePointerSquareDashed, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { FIXED_BED_LAYOUT, FIXED_CANVAS_WIDTH, FIXED_CANVAS_HEIGHT } from '@/data/fixedBedLayout';
 
@@ -243,16 +243,6 @@ export const BedManager: React.FC<BedManagerProps> = ({
             </span>
             <Button variant="outline" size="sm" onClick={handleZoomIn}>
               <ZoomIn className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onClearAllBeds}
-              disabled={totalPlants === 0}
-              className="ml-2"
-              title="Clear all plants"
-            >
-              <RotateCcw className="w-4 h-4" />
             </Button>
           </div>
           {onToggleSelectMode && (
