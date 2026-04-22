@@ -351,7 +351,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
             {/* Garden entrance marker — between Bed 4 (top-right) and Bed 8 (bottom-right) */}
             <div
               className="absolute pointer-events-none flex flex-col items-center justify-center gap-3"
-              style={{ left: '1108px', top: '560px', width: '316px', height: '260px' }}
+              style={{ left: '1340px', top: '560px', width: '180px', height: '260px' }}
               aria-label="Garden entrance"
             >
               {/* Top post */}
