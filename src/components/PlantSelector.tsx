@@ -5,6 +5,16 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Search, Loader2, Leaf } from 'lucide-react';
 
+// Curated local plants that should always appear (with our own icons)
+// even when Wikipedia has no thumbnail or buries the result.
+const CURATED_PLANTS: { name: string; iconUrl: string }[] = [
+  {
+    name: 'Creeping Thyme',
+    iconUrl:
+      'https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/creepingthyme.png',
+  },
+];
+
 interface PlantSelectorProps {
   selectedPlant: Plant | null;
   onSelectPlant: (plant: Plant | null) => void;
@@ -79,6 +89,26 @@ function wikiResultToPlant(r: WikiResult): Plant {
   };
 }
 
+// Build a stable pseudo pageId for curated entries so selection state still works.
+function curatedPageId(name: string): number {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  // Negative ids to avoid colliding with real Wikipedia pageids
+  return -Math.abs(h) - 1;
+}
+
+function getCuratedMatches(term: string): WikiResult[] {
+  const t = term.trim().toLowerCase();
+  if (!t) return [];
+  return CURATED_PLANTS
+    .filter((p) => p.name.toLowerCase().includes(t))
+    .map((p) => ({
+      pageId: curatedPageId(p.name),
+      title: p.name,
+      thumbnail: p.iconUrl,
+    }));
+}
+
 export const PlantSelector: React.FC<PlantSelectorProps> = ({
   selectedPlant,
   onSelectPlant,
@@ -103,7 +133,17 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
       )
     ).then((items) => {
       if (!active) return;
-      setResults(items.filter((x): x is WikiResult => !!x));
+      const wiki = items.filter((x): x is WikiResult => !!x);
+      const curated = CURATED_PLANTS.map((p) => ({
+        pageId: curatedPageId(p.name),
+        title: p.name,
+        thumbnail: p.iconUrl,
+      }));
+      const seen = new Set(curated.map((c) => c.title.toLowerCase()));
+      setResults([
+        ...curated,
+        ...wiki.filter((w) => !seen.has(w.title.toLowerCase())),
+      ]);
       setLoading(false);
     });
     return () => {
@@ -125,7 +165,12 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
       setError(null);
       try {
         const items = await searchWikipedia(term, controller.signal);
-        setResults(items);
+        const curated = getCuratedMatches(term);
+        const seen = new Set(curated.map((c) => c.title.toLowerCase()));
+        setResults([
+          ...curated,
+          ...items.filter((w) => !seen.has(w.title.toLowerCase())),
+        ]);
       } catch (e) {
         if ((e as Error).name !== 'AbortError') {
           setError('Could not reach Wikipedia. Check your connection.');
