@@ -186,9 +186,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
             key={`${x}-${y}`}
             className={cn(
               "w-16 h-16 border-[6px] border-transparent bg-card/80 cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
-              isHovered && !plantedCell && !isSelected && "bg-grid-hover",
               plantedCell && "bg-grid-occupied border-grid-merged",
-              selectedPlant && !plantedCell && !selectMode && "hover:bg-grid-hover",
               isSelected && "bg-primary/20 border-primary ring-2 ring-primary/40",
               selectMode && plantedCell && "opacity-60 cursor-not-allowed",
               isSelectableEmpty && !isSelected && "hover:bg-primary/10",
@@ -214,7 +212,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
             )}
             {!plantedCell && isHovered && !selectMode && (
               <Plus
-                className="w-6 h-6 text-muted-foreground/60 pointer-events-none transition-opacity"
+                className="w-8 h-8 text-foreground pointer-events-none transition-opacity"
                 strokeWidth={2.5}
               />
             )}
