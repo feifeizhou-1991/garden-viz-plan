@@ -55,6 +55,7 @@ export const PLANTS: Plant[] = [
   { id: 'lavender', name: 'Lavender', type: 'herb', color: 'bg-purple-400', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/lavender.png`, spacing: 1, season: ['Spring', 'Summer'] },
   { id: 'tarragon', name: 'Tarragon', type: 'herb', color: 'bg-green-600', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/tarragon.png`, spacing: 1, season: ['Spring', 'Summer'] },
   { id: 'lemonbalm', name: 'Lemon Balm', type: 'herb', color: 'bg-lime-500', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/lemonbalm.png`, spacing: 1, season: ['Spring', 'Summer'] },
+  { id: 'creepingthyme', name: 'Creeping Thyme', type: 'herb', color: 'bg-purple-400', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/creepingthyme.png`, spacing: 1, season: ['Spring', 'Summer', 'Fall'] },
 
   // ---------- Fruits & Berries ----------
   { id: 'strawberry', name: 'Strawberry', type: 'fruit', color: 'bg-red-400', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/strawberry.png`, spacing: 1, season: ['Spring', 'Summer'] },
