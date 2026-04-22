@@ -328,8 +328,8 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         </SheetHeader>
 
         {/* Category chips */}
-        <div className="border-b flex-shrink-0 py-2.5 px-4 overflow-x-auto">
-          <div className="flex gap-1.5 flex-nowrap items-center">
+        <div className="border-b flex-shrink-0 py-3 px-4">
+          <div className="flex gap-1.5 flex-wrap items-center">
             {categories.map((cat) => (
               <button
                 key={cat}
