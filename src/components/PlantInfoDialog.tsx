@@ -177,12 +177,12 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle className="flex items-center gap-3">
             <img
-              src={plant.icon}
-              alt={plant.name}
+              src={displayIcon}
+              alt={displayName}
               className="w-14 h-14 object-cover rounded-md border"
             />
             <div className="flex flex-col items-start">
-              <span className="text-lg">{catalog?.common_name ?? plant.name}</span>
+              <span className="text-lg">{displayName}</span>
               {catalog?.scientific_name && (
                 <span className="text-xs italic text-muted-foreground font-normal">
                   {catalog.scientific_name}
@@ -191,7 +191,7 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
             </div>
           </DialogTitle>
           <DialogDescription className="capitalize">
-            {catalog?.category ?? plant.type}
+            {displayCategory}
           </DialogDescription>
         </DialogHeader>
 
