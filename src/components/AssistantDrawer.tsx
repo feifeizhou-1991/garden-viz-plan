@@ -9,7 +9,7 @@ import { Input } from './ui/input';
 import { Loader2, Sparkles, Check, X, Search, Leaf } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { PlantInfoDialog } from './PlantInfoDialog';
+import { PlantInfoView } from './PlantInfoView';
 
 type CatalogPlant = {
   slug: string;
