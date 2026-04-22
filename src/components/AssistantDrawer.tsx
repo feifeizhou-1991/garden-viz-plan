@@ -506,6 +506,13 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
           )}
         </div>
       </SheetContent>
+      <PlantInfoDialog
+        open={!!detailPlant}
+        onOpenChange={(o) => !o && setDetailPlant(null)}
+        catalogPlant={detailPlant}
+        onPlace={targetCell ? handlePlaceFromDetail : undefined}
+        placeLabel="Place in selected cell"
+      />
     </Sheet>
   );
 };
