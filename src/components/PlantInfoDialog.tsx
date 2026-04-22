@@ -199,7 +199,7 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
           <div className="px-6 py-4 space-y-5 text-sm">
             {/* Planting details */}
             <section className="space-y-2">
-              {bedName && (
+              {bedName && cell && (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Sprout className="w-4 h-4" />
                   <span>
@@ -207,16 +207,20 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Planted by</span>
-                <span className="font-medium">{planterLabel}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">On</span>
-                <span className="font-medium">{formattedDate}</span>
-              </div>
+              {cell && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Planted by</span>
+                    <span className="font-medium">{planterLabel}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">On</span>
+                    <span className="font-medium">{formattedDate}</span>
+                  </div>
+                </>
+              )}
             </section>
 
             {/* Description */}
