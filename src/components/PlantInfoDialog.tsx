@@ -326,8 +326,8 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
                     <div>
                       <div className="text-[10px] text-muted-foreground">Spacing</div>
                       <div className="font-medium text-xs">
-                        {catalog?.spacing ?? plant.spacing} cell
-                        {(catalog?.spacing ?? plant.spacing) > 1 ? 's' : ''}
+                        {catalog?.spacing ?? fallbackSpacing} cell
+                        {(catalog?.spacing ?? fallbackSpacing) > 1 ? 's' : ''}
                       </div>
                     </div>
                   </div>
