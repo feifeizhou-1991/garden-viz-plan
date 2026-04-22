@@ -87,7 +87,7 @@ const GardensOverview: React.FC = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Welcome to our shared garden space! This is a place for growing food, building community,
             and enjoying nature together. To keep things running smoothly and ensure everyone feels
-            welcome, please follow these guidelines:
+            welcome, please follow our community guidelines.
           </p>
           <div className="flex justify-center pt-2">
             <Link to="/community-rules">
