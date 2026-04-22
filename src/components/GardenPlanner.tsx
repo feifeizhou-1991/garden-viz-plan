@@ -23,7 +23,10 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [pendingCell, setPendingCell] = useState<{ bedId: string; x: number; y: number } | null>(null);
   const [infoCell, setInfoCell] = useState<{ bedId: string; x: number; y: number } | null>(null);
-  const drawerOpen = pendingCell !== null || !!assistantOpen;
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedCellsByBed, setSelectedCellsByBed] = useState<Record<string, Set<string>>>({});
+  const [pendingCells, setPendingCells] = useState<{ bedId: string; x: number; y: number }[] | null>(null);
+  const drawerOpen = pendingCell !== null || pendingCells !== null || !!assistantOpen;
   const { profiles } = useProfiles();
 
   // Initialize beds if they don't exist (backward compatibility)
@@ -144,6 +147,88 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
     []
   );
 
+  const handleToggleSelectMode = useCallback(() => {
+    setSelectMode((prev) => {
+      if (prev) {
+        // Leaving select mode — clear selection.
+        setSelectedCellsByBed({});
+      }
+      return !prev;
+    });
+  }, []);
+
+  const handleToggleCellSelection = useCallback((bedId: string, x: number, y: number) => {
+    setSelectedCellsByBed((prev) => {
+      const next = { ...prev };
+      const set = new Set(next[bedId] ?? []);
+      const key = `${x},${y}`;
+      if (set.has(key)) set.delete(key);
+      else set.add(key);
+      if (set.size === 0) delete next[bedId];
+      else next[bedId] = set;
+      return next;
+    });
+  }, []);
+
+  const handleAddPlantsToSelection = useCallback(() => {
+    const cells: { bedId: string; x: number; y: number }[] = [];
+    Object.entries(selectedCellsByBed).forEach(([bedId, set]) => {
+      set.forEach((key) => {
+        const [x, y] = key.split(',').map(Number);
+        cells.push({ bedId, x, y });
+      });
+    });
+    if (cells.length === 0) return;
+    setPendingCells(cells);
+  }, [selectedCellsByBed]);
+
+  const handlePlaceForCells = useCallback(
+    async (cells: { bedId: string; x: number; y: number }[], plant: Plant) => {
+      const beds = garden.beds || [];
+      const { data: userData } = await supabase.auth.getUser();
+      const planter = userData.user?.id;
+      const now = new Date().toISOString();
+      // Group target cells by bed
+      const byBed = new Map<string, { x: number; y: number }[]>();
+      cells.forEach((c) => {
+        const arr = byBed.get(c.bedId) ?? [];
+        arr.push({ x: c.x, y: c.y });
+        byBed.set(c.bedId, arr);
+      });
+      let added = 0;
+      const updatedBeds = beds.map((b) => {
+        const targets = byBed.get(b.id);
+        if (!targets) return b;
+        const occupied = new Set(b.plants.map((p) => `${p.x},${p.y}`));
+        const additions: PlantedCell[] = [];
+        for (const t of targets) {
+          const key = `${t.x},${t.y}`;
+          if (occupied.has(key)) continue;
+          occupied.add(key);
+          additions.push({
+            x: t.x,
+            y: t.y,
+            plant,
+            plantedBy: planter,
+            plantedAt: now,
+          });
+        }
+        added += additions.length;
+        return { ...b, plants: [...b.plants, ...additions] };
+      });
+      if (added === 0) {
+        toast.error('All selected cells are already taken.');
+        return;
+      }
+      handleUpdateGarden({ ...garden, beds: updatedBeds });
+      toast.success(`Planted ${added} ${plant.name}${added > 1 ? 's' : ''}`);
+      setSelectedCellsByBed({});
+      setSelectMode(false);
+      setPendingCells(null);
+    },
+    [garden, handleUpdateGarden]
+  );
+
   const handlePlacePlant = useCallback(
     async (bedId: string, x: number, y: number, plant: Plant) => {
       const beds = garden.beds || [];
@@ -248,6 +333,11 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
         onClearAllBeds={clearAllBeds}
         onEmptyCellClick={handleEmptyCellClick}
         onPlantedCellClick={handlePlantedCellClick}
+        selectMode={selectMode}
+        onToggleSelectMode={handleToggleSelectMode}
+        selectedCellsByBed={selectedCellsByBed}
+        onToggleCellSelection={handleToggleCellSelection}
+        onAddPlantsToSelection={handleAddPlantsToSelection}
       />
 
       <AssistantDrawer
@@ -255,13 +345,16 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
         onOpenChange={(open) => {
           if (!open) {
             setPendingCell(null);
+            setPendingCells(null);
             onAssistantOpenChange?.(false);
           }
         }}
         garden={garden}
         targetCell={pendingCell}
+        targetCells={pendingCells}
         onPlacePlant={handlePlacePlant}
         onApplyProposal={handleApplyProposal}
+        onPlacePlantInCells={handlePlaceForCells}
       />
 
       <PlantInfoDialog
