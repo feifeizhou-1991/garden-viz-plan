@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Garden } from '../types/garden';
 import { GardenPlanner } from '../components/GardenPlanner';
 import { Button } from '../components/ui/button';
-import { ArrowLeft, Edit, Plus } from 'lucide-react';
+import { ArrowLeft, Edit, LeafyGreen } from 'lucide-react';
 import { PlanterAvatars } from '../components/PlanterAvatars';
 import { toast } from 'sonner';
 import { getGardenById, syncGardenBeds, ensureFixedLayout } from '@/hooks/useGardens';
@@ -101,10 +101,10 @@ const GardenDetail: React.FC = () => {
           <Button
             onClick={() => setAssistantOpen(true)}
             className="gap-2"
-            aria-label="Add plants"
+            aria-label="Plant Database"
           >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add plants</span>
+            <LeafyGreen className="w-4 h-4" />
+            <span className="hidden sm:inline">Plant Database</span>
           </Button>
         </div>
 
