@@ -285,7 +285,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" showClose={false} className="w-full sm:max-w-md flex flex-col p-0">
+      <SheetContent side="right" showClose={false} className="w-full sm:max-w-md flex flex-col p-0 gap-0">
         <SheetHeader className="px-[17px] my-0 pt-4 pb-3 border-b flex-shrink-0 space-y-3">
           <SheetDescription className="sr-only">
             {targetCell
