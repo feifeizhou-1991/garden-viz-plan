@@ -185,7 +185,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
           <div
             key={`${x}-${y}`}
             className={cn(
-              "w-16 h-16 border border-grid-line bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
+              "w-16 h-16 border border-grid-merged bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
               isHovered && !plantedCell && !isSelected && "bg-grid-hover",
               plantedCell && "bg-grid-occupied",
               selectedPlant && !plantedCell && !selectMode && "hover:bg-grid-hover",
