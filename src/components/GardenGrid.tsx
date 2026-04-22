@@ -234,8 +234,6 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
   return (
     <div className="relative inline-block">
       <div
-        className="inline-grid gap-2 p-8 bg-muted rounded-xl border-2 border-border shadow-lg"
-        style={{
         className="inline-grid gap-2 p-8 bg-muted rounded-xl border-border shadow-lg border-0"
         style={{
           gridTemplateColumns: `repeat(${width}, ${CELL_PX}px)`,
