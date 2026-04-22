@@ -300,14 +300,14 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               e.preventDefault();
               askAI();
             }}
-            className="relative"
+            className="relative mr-8"
           >
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
             <Input
               placeholder="Search plants or ask the assistant…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 pr-24 mr-8"
+              className="pl-10 pr-24"
               disabled={aiLoading}
             />
             <Button
@@ -315,7 +315,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               size="sm"
               variant="secondary"
               disabled={aiLoading || !search.trim()}
-              className="absolute right-9 top-1/2 -translate-y-1/2 h-8 gap-1"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 gap-1"
             >
               {aiLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
