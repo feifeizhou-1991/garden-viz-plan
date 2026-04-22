@@ -1,8 +1,10 @@
 // Streaming AI garden assistant. Uses Lovable AI with tool-calling so the model
 // can return structured plant suggestions and placement proposals.
-// Tools are executed server-side: the function looks up the plant_catalog,
-// calls generate-plant-icon for unknown plants, and inserts new rows.
-// The user's frontend renders the tool outputs as chat-attached widgets.
+//
+// The assistant is restricted to the curated `plant_catalog` table — it cannot
+// invent new plants. The full catalog is loaded at the start of each request
+// and injected into the system prompt; `suggest_plants` then takes a list of
+// catalog `slugs` and returns the matching rows verbatim.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -14,23 +16,13 @@ const corsHeaders = {
 
 type ChatMsg = { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string; name?: string };
 
-function slugify(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 60);
-}
-
 const TOOLS = [
   {
     type: "function",
     function: {
       name: "suggest_plants",
       description:
-        "Search the plant catalog for plants matching a query. Returns up to 6 plant cards with images. Always call this when the user is looking for plant ideas, asks 'what should I grow', or names a category like 'herbs' or 'vegetables'. Only return real, plantable garden plants — no people, songs, or unrelated items.",
+        "Recommend plants from the curated CATALOG. Pass 3-6 slugs that already exist in the CATALOG list (system prompt). Returns the full plant cards with images. Always call this when the user wants ideas, asks 'what should I grow', or names a category like 'herbs' or 'vegetables'. NEVER invent slugs — only use values from the CATALOG.",
       parameters: {
         type: "object",
         properties: {
@@ -38,43 +30,15 @@ const TOOLS = [
             type: "string",
             description: "Free-text query, e.g. 'leafy greens for shade' or 'tomato'",
           },
-          plants: {
+          slugs: {
             type: "array",
-            description:
-              "List of 3-6 specific plants to suggest. The server will look these up or create them.",
-            items: {
-              type: "object",
-              properties: {
-                common_name: { type: "string", description: "e.g. Tomato, Basil, Sunflower" },
-                scientific_name: { type: "string" },
-                category: {
-                  type: "string",
-                  enum: ["vegetable", "herb", "fruit", "flower", "tree", "other"],
-                },
-                season: {
-                  type: "array",
-                  items: { type: "string", enum: ["Spring", "Summer", "Fall", "Winter"] },
-                },
-                spacing: { type: "integer", minimum: 1, maximum: 4, description: "Cells the plant occupies, 1-4." },
-                description: { type: "string", description: "1-2 sentence growing tip." },
-                days_to_harvest_min: { type: "integer", description: "Typical minimum days from planting to first harvest." },
-                days_to_harvest_max: { type: "integer", description: "Typical maximum days from planting to first harvest." },
-                harvest_season: {
-                  type: "array",
-                  items: { type: "string", enum: ["Spring", "Summer", "Fall", "Winter"] },
-                  description: "Seasons in which this plant is typically harvested.",
-                },
-                sun: { type: "string", enum: ["Full sun", "Partial shade", "Shade"] },
-                water: { type: "string", enum: ["Low", "Medium", "High"] },
-                planting_depth_cm: { type: "number", description: "Recommended planting depth in cm." },
-                companions: { type: "array", items: { type: "string" }, description: "Common companion plants." },
-                avoid: { type: "array", items: { type: "string" }, description: "Plants to avoid planting nearby." },
-              },
-              required: ["common_name", "category", "season", "spacing"],
-            },
+            description: "3-6 plant slugs from the CATALOG (e.g. 'tomato', 'basil', 'snap-pea'). Must match exactly.",
+            items: { type: "string" },
+            minItems: 1,
+            maxItems: 6,
           },
         },
-        required: ["query", "plants"],
+        required: ["query", "slugs"],
       },
     },
   },
