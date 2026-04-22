@@ -286,7 +286,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" showClose={false} className="w-full sm:max-w-md flex flex-col p-0 gap-0">
-        <SheetHeader className="px-[17px] my-0 pt-4 pb-3 border-b flex-shrink-0 space-y-3">
+        <SheetHeader className="px-[16px] py-0 my-0 pt-4 pb-3 border-b flex-shrink-0 space-y-3">
           <SheetDescription className="sr-only">
             {targetCell
               ? `Filling ${garden.beds?.find((b) => b.id === targetCell.bedId)?.name ?? 'cell'} — row ${targetCell.y + 1}, col ${targetCell.x + 1}`
@@ -339,7 +339,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         </SheetHeader>
 
         {/* Category chips */}
-        <div className="flex-shrink-0 px-4 min-h-[76px] flex items-center">
+        <div className="flex-shrink-0 px-4 min-h-[76px] flex items-center my-0 py-0">
           <div className="flex gap-1.5 flex-wrap items-center">
             {categories.map((cat) => (
               <button
