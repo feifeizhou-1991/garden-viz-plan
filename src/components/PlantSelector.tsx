@@ -133,7 +133,17 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
       )
     ).then((items) => {
       if (!active) return;
-      setResults(items.filter((x): x is WikiResult => !!x));
+      const wiki = items.filter((x): x is WikiResult => !!x);
+      const curated = CURATED_PLANTS.map((p) => ({
+        pageId: curatedPageId(p.name),
+        title: p.name,
+        thumbnail: p.iconUrl,
+      }));
+      const seen = new Set(curated.map((c) => c.title.toLowerCase()));
+      setResults([
+        ...curated,
+        ...wiki.filter((w) => !seen.has(w.title.toLowerCase())),
+      ]);
       setLoading(false);
     });
     return () => {
@@ -155,7 +165,12 @@ export const PlantSelector: React.FC<PlantSelectorProps> = ({
       setError(null);
       try {
         const items = await searchWikipedia(term, controller.signal);
-        setResults(items);
+        const curated = getCuratedMatches(term);
+        const seen = new Set(curated.map((c) => c.title.toLowerCase()));
+        setResults([
+          ...curated,
+          ...items.filter((w) => !seen.has(w.title.toLowerCase())),
+        ]);
       } catch (e) {
         if ((e as Error).name !== 'AbortError') {
           setError('Could not reach Wikipedia. Check your connection.');
