@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Plus, Calendar, Grid3x3, Pencil, Trash2, LogOut, BookOpen } from 'lucide-react';
+import { Plus, Calendar, Grid3x3, Trash2, LogOut, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -130,43 +130,6 @@ const GardensOverview: React.FC = () => {
                     </Link>
 
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-8 w-8 p-0"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              startEditing(garden);
-                            }}
-                          >
-                            <Pencil className="w-3 h-3" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Rename Garden</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <Input
-                              value={editName}
-                              onChange={(e) => setEditName(e.target.value)}
-                              placeholder="Enter new garden name"
-                              onKeyDown={(e) => e.key === 'Enter' && handleRenameGarden()}
-                            />
-                            <div className="flex justify-end gap-2">
-                              <Button variant="outline" onClick={() => setEditingGarden(null)}>
-                                Cancel
-                              </Button>
-                              <Button onClick={handleRenameGarden}>
-                                Rename
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-
                       {gardens.length > 1 && (
                         <Button
                           size="sm"
