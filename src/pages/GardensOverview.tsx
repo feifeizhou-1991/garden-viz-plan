@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Plus, Calendar, Grid3x3, Pencil, Trash2, LogOut } from 'lucide-react';
+import { Plus, Calendar, Grid3x3, Pencil, Trash2, LogOut, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -87,6 +87,14 @@ const GardensOverview: React.FC = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Manage and plan your vegetable garden layouts
           </p>
+          <div className="flex justify-center pt-2">
+            <Link to="/community-rules">
+              <Button variant="outline" size="sm">
+                <BookOpen className="w-4 h-4" />
+                Community rules
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Timeline */}
