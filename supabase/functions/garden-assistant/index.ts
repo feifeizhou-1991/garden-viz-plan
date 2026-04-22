@@ -97,103 +97,67 @@ COORDINATES (CRITICAL):
 
 const FULL_SYSTEM_PROMPT = SYSTEM_PROMPT + COORDINATE_RULES;
 
-async function handleSuggestPlants(
-  admin: ReturnType<typeof createClient>,
-  supabaseUrl: string,
-  args: { query: string; plants: Array<{
-    common_name: string;
-    scientific_name?: string;
-    category: string;
-    season: string[];
-    spacing: number;
-    description?: string;
-    days_to_harvest_min?: number;
-    days_to_harvest_max?: number;
-    harvest_season?: string[];
-    sun?: string;
-    water?: string;
-    planting_depth_cm?: number;
-    companions?: string[];
-    avoid?: string[];
-  }> }
-) {
-  const results: Array<{
-    slug: string;
-    common_name: string;
-    scientific_name: string | null;
-    category: string;
-    season: string[];
-    spacing: number;
-    description: string | null;
-    image_url: string | null;
-  }> = [];
+type CatalogRow = {
+  slug: string;
+  common_name: string;
+  scientific_name: string | null;
+  category: string;
+  season: string[];
+  harvest_season: string[];
+  spacing: number;
+  sun: string | null;
+  water: string | null;
+  description: string | null;
+  image_url: string | null;
+  days_to_harvest_min: number | null;
+  days_to_harvest_max: number | null;
+  planting_depth_cm: number | null;
+  companions: string[];
+  avoid: string[];
+};
 
-  for (const p of args.plants.slice(0, 6)) {
-    const slug = slugify(p.common_name);
-    if (!slug) continue;
-
-    // Try existing
-    const { data: existing } = await admin
-      .from("plant_catalog")
-      .select("*")
-      .eq("slug", slug)
-      .maybeSingle();
-
-    if (existing && existing.image_url) {
-      results.push(existing as any);
-      continue;
-    }
-
-    // Generate icon (or reuse cached file)
-    let imageUrl: string | null = null;
-    try {
-      const iconRes = await fetch(`${supabaseUrl}/functions/v1/generate-plant-icon`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-        },
-        body: JSON.stringify({ name: p.common_name }),
-      });
-      if (iconRes.ok) {
-        const j = await iconRes.json();
-        imageUrl = j.image_url ?? null;
-      } else {
-        console.error("icon gen failed", await iconRes.text());
-      }
-    } catch (e) {
-      console.error("icon fetch error", e);
-    }
-
-    const row = {
-      slug,
-      common_name: p.common_name,
-      scientific_name: p.scientific_name ?? null,
-      category: p.category,
-      season: p.season ?? [],
-      spacing: Math.min(Math.max(p.spacing ?? 1, 1), 4),
-      description: p.description ?? null,
-      image_url: imageUrl,
-      days_to_harvest_min: p.days_to_harvest_min ?? null,
-      days_to_harvest_max: p.days_to_harvest_max ?? null,
-      harvest_season: p.harvest_season ?? [],
-      sun: p.sun ?? null,
-      water: p.water ?? null,
-      planting_depth_cm: p.planting_depth_cm ?? null,
-      companions: p.companions ?? [],
-      avoid: p.avoid ?? [],
-    };
-
-    const { data: upserted } = await admin
-      .from("plant_catalog")
-      .upsert(row, { onConflict: "slug" })
-      .select("*")
-      .maybeSingle();
-
-    results.push((upserted ?? row) as any);
+async function loadCatalog(
+  admin: ReturnType<typeof createClient>
+): Promise<CatalogRow[]> {
+  const { data, error } = await admin
+    .from("plant_catalog")
+    .select(
+      "slug, common_name, scientific_name, category, season, harvest_season, spacing, sun, water, description, image_url, days_to_harvest_min, days_to_harvest_max, planting_depth_cm, companions, avoid"
+    )
+    .order("common_name");
+  if (error) {
+    console.error("loadCatalog error", error);
+    return [];
   }
+  return (data ?? []) as CatalogRow[];
+}
 
-  return { plants: results };
+function summarizeCatalog(catalog: CatalogRow[]): string {
+  // Compact one-line summary per plant so the model can pick by slug.
+  return catalog
+    .map(
+      (p) =>
+        `- ${p.slug} | ${p.common_name} (${p.category}) — sun:${p.sun ?? "?"}, water:${p.water ?? "?"}, season:${(p.season ?? []).join("/") || "?"}, spacing:${p.spacing}`
+    )
+    .join("\n");
+}
+
+function handleSuggestPlants(
+  catalog: CatalogRow[],
+  args: { query?: string; slugs?: unknown }
+) {
+  const wanted = Array.isArray(args.slugs)
+    ? (args.slugs as unknown[]).filter((s): s is string => typeof s === "string").slice(0, 6)
+    : [];
+  const bySlug = new Map(catalog.map((p) => [p.slug, p]));
+  const plants = wanted
+    .map((slug) => bySlug.get(slug))
+    .filter((p): p is CatalogRow => !!p);
+  return {
+    query: typeof args.query === "string" ? args.query : "",
+    plants,
+    rejected: wanted.filter((slug) => !bySlug.has(slug)),
+  };
 }
 
 Deno.serve(async (req) => {
