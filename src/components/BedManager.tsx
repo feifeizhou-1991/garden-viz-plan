@@ -315,7 +315,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
                 style={{ left: `${bed.x}px`, top: `${bed.y}px` }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="text-sm font-medium text-foreground">
+                  <div className="font-medium text-foreground text-base">
                     {bed.name} ({bed.width}×{bed.height})
                   </div>
                 </div>
