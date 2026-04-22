@@ -254,7 +254,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
         return (
           <div
             key={`merged-${r.x}-${r.y}-${r.plantId}`}
-            className="absolute pointer-events-none flex items-center justify-center bg-grid-occupied border border-grid-line rounded-lg overflow-hidden"
+            className="absolute pointer-events-none flex items-center justify-center bg-grid-occupied border border-grid-line rounded-lg p-px"
             style={{
               left: `${left}px`,
               top: `${top}px`,
@@ -266,7 +266,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
             <img
               src={r.plant.icon}
               alt={r.plant.name}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-cover rounded-[7px]"
             />
           </div>
         );
