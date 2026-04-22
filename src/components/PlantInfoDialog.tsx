@@ -51,6 +51,7 @@ type CatalogRow = {
   planting_depth_cm: number | null;
   companions: string[];
   avoid: string[];
+  image_url: string | null;
 };
 
 const ALL_SEASONS = ['Spring', 'Summer', 'Fall', 'Winter'] as const;
