@@ -185,7 +185,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
           <div
             key={`${x}-${y}`}
             className={cn(
-              "w-16 h-16 border border-grid-merged bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
+              "w-16 h-16 border-[10px] border-grid-merged bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
               isHovered && !plantedCell && !isSelected && "bg-grid-hover",
               plantedCell && "bg-grid-occupied",
               selectedPlant && !plantedCell && !selectMode && "hover:bg-grid-hover",
@@ -208,7 +208,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
                 <img 
                   src={plantedCell.plant.icon} 
                   alt={plantedCell.plant.name} 
-                  className="w-12 h-12 object-cover rounded-lg pointer-events-none"
+                  className="w-full h-full object-cover rounded-sm pointer-events-none"
                 />
               </div>
             )}
