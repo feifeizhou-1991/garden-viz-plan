@@ -3,7 +3,7 @@ import { Garden, GardenBed, Plant } from '../types/garden';
 import { GardenGrid } from './GardenGrid';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader } from './ui/card';
-import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, MousePointerSquareDashed, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { FIXED_BED_LAYOUT, FIXED_CANVAS_WIDTH, FIXED_CANVAS_HEIGHT } from '@/data/fixedBedLayout';
 
@@ -14,6 +14,11 @@ interface BedManagerProps {
   onClearAllBeds: () => void;
   onEmptyCellClick?: (bedId: string, x: number, y: number) => void;
   onPlantedCellClick?: (bedId: string, x: number, y: number) => void;
+  selectMode?: boolean;
+  onToggleSelectMode?: () => void;
+  selectedCellsByBed?: Record<string, Set<string>>;
+  onToggleCellSelection?: (bedId: string, x: number, y: number) => void;
+  onAddPlantsToSelection?: () => void;
 }
 
 export const BedManager: React.FC<BedManagerProps> = ({
@@ -23,6 +28,11 @@ export const BedManager: React.FC<BedManagerProps> = ({
   onClearAllBeds,
   onEmptyCellClick,
   onPlantedCellClick,
+  selectMode = false,
+  onToggleSelectMode,
+  selectedCellsByBed,
+  onToggleCellSelection,
+  onAddPlantsToSelection,
 }) => {
   const [zoom, setZoom] = useState(0.7);
   const [touchStart, setTouchStart] = useState<{ distance: number; zoom: number } | null>(null);
