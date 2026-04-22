@@ -185,9 +185,9 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
           <div
             key={`${x}-${y}`}
             className={cn(
-              "w-16 h-16 border-[10px] border-grid-merged bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
+              "w-16 h-16 border-[6px] border-transparent bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
               isHovered && !plantedCell && !isSelected && "bg-grid-hover",
-              plantedCell && "bg-grid-occupied",
+              plantedCell && "bg-grid-occupied border-grid-merged",
               selectedPlant && !plantedCell && !selectMode && "hover:bg-grid-hover",
               isSelected && "bg-primary/20 border-primary ring-2 ring-primary/40",
               selectMode && plantedCell && "opacity-60 cursor-not-allowed",
@@ -254,7 +254,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
         return (
           <div
             key={`merged-${r.x}-${r.y}-${r.plantId}`}
-            className="absolute pointer-events-none flex items-center justify-center bg-grid-merged border-[10px] border-grid-merged rounded-lg"
+            className="absolute pointer-events-none flex items-center justify-center bg-grid-merged border-[6px] border-grid-merged rounded-lg"
             style={{
               left: `${left}px`,
               top: `${top}px`,
