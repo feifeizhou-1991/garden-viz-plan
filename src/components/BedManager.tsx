@@ -226,6 +226,9 @@ export const BedManager: React.FC<BedManagerProps> = ({
   }, [isPanning, handlePanMove, handlePanEnd]);
 
   const totalPlants = beds.reduce((t, b) => t + b.plants.length, 0);
+  const totalSelected = selectedCellsByBed
+    ? Object.values(selectedCellsByBed).reduce((sum, s) => sum + s.size, 0)
+    : 0;
 
   return (
     <Card className="h-full flex flex-col">
@@ -252,6 +255,45 @@ export const BedManager: React.FC<BedManagerProps> = ({
               <RotateCcw className="w-4 h-4" />
             </Button>
           </div>
+          {onToggleSelectMode && (
+            <div className="flex items-center gap-2 ml-auto">
+              {selectMode && onAddPlantsToSelection && (
+                <Button
+                  size="sm"
+                  onClick={onAddPlantsToSelection}
+                  disabled={totalSelected === 0}
+                  className="gap-1"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add plants
+                  {totalSelected > 0 && (
+                    <span className="ml-1 rounded-full bg-primary-foreground/20 px-1.5 text-xs">
+                      {totalSelected}
+                    </span>
+                  )}
+                </Button>
+              )}
+              <Button
+                variant={selectMode ? 'secondary' : 'outline'}
+                size="sm"
+                onClick={onToggleSelectMode}
+                className="gap-1"
+                title={selectMode ? 'Cancel selection' : 'Select multiple slots'}
+              >
+                {selectMode ? (
+                  <>
+                    <X className="w-4 h-4" />
+                    Cancel
+                  </>
+                ) : (
+                  <>
+                    <MousePointerSquareDashed className="w-4 h-4" />
+                    Select multiple
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </CardHeader>
 
