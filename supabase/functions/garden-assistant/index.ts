@@ -1,8 +1,10 @@
 // Streaming AI garden assistant. Uses Lovable AI with tool-calling so the model
 // can return structured plant suggestions and placement proposals.
-// Tools are executed server-side: the function looks up the plant_catalog,
-// calls generate-plant-icon for unknown plants, and inserts new rows.
-// The user's frontend renders the tool outputs as chat-attached widgets.
+//
+// The assistant is restricted to the curated `plant_catalog` table — it cannot
+// invent new plants. The full catalog is loaded at the start of each request
+// and injected into the system prompt; `suggest_plants` then takes a list of
+// catalog `slugs` and returns the matching rows verbatim.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -14,23 +16,13 @@ const corsHeaders = {
 
 type ChatMsg = { role: "system" | "user" | "assistant" | "tool"; content: string; tool_call_id?: string; name?: string };
 
-function slugify(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 60);
-}
-
 const TOOLS = [
   {
     type: "function",
     function: {
       name: "suggest_plants",
       description:
-        "Search the plant catalog for plants matching a query. Returns up to 6 plant cards with images. Always call this when the user is looking for plant ideas, asks 'what should I grow', or names a category like 'herbs' or 'vegetables'. Only return real, plantable garden plants — no people, songs, or unrelated items.",
+        "Recommend plants from the curated CATALOG. Pass 3-6 slugs that already exist in the CATALOG list (system prompt). Returns the full plant cards with images. Always call this when the user wants ideas, asks 'what should I grow', or names a category like 'herbs' or 'vegetables'. NEVER invent slugs — only use values from the CATALOG.",
       parameters: {
         type: "object",
         properties: {
@@ -38,43 +30,15 @@ const TOOLS = [
             type: "string",
             description: "Free-text query, e.g. 'leafy greens for shade' or 'tomato'",
           },
-          plants: {
+          slugs: {
             type: "array",
-            description:
-              "List of 3-6 specific plants to suggest. The server will look these up or create them.",
-            items: {
-              type: "object",
-              properties: {
-                common_name: { type: "string", description: "e.g. Tomato, Basil, Sunflower" },
-                scientific_name: { type: "string" },
-                category: {
-                  type: "string",
-                  enum: ["vegetable", "herb", "fruit", "flower", "tree", "other"],
-                },
-                season: {
-                  type: "array",
-                  items: { type: "string", enum: ["Spring", "Summer", "Fall", "Winter"] },
-                },
-                spacing: { type: "integer", minimum: 1, maximum: 4, description: "Cells the plant occupies, 1-4." },
-                description: { type: "string", description: "1-2 sentence growing tip." },
-                days_to_harvest_min: { type: "integer", description: "Typical minimum days from planting to first harvest." },
-                days_to_harvest_max: { type: "integer", description: "Typical maximum days from planting to first harvest." },
-                harvest_season: {
-                  type: "array",
-                  items: { type: "string", enum: ["Spring", "Summer", "Fall", "Winter"] },
-                  description: "Seasons in which this plant is typically harvested.",
-                },
-                sun: { type: "string", enum: ["Full sun", "Partial shade", "Shade"] },
-                water: { type: "string", enum: ["Low", "Medium", "High"] },
-                planting_depth_cm: { type: "number", description: "Recommended planting depth in cm." },
-                companions: { type: "array", items: { type: "string" }, description: "Common companion plants." },
-                avoid: { type: "array", items: { type: "string" }, description: "Plants to avoid planting nearby." },
-              },
-              required: ["common_name", "category", "season", "spacing"],
-            },
+            description: "3-6 plant slugs from the CATALOG (e.g. 'tomato', 'basil', 'snap-pea'). Must match exactly.",
+            items: { type: "string" },
+            minItems: 1,
+            maxItems: 6,
           },
         },
-        required: ["query", "plants"],
+        required: ["query", "slugs"],
       },
     },
   },
@@ -113,12 +77,12 @@ const SYSTEM_PROMPT = `You are a friendly, expert community-garden assistant. Yo
 
 RULES:
 - Only ever discuss real, plantable garden plants. Refuse politely if asked about non-garden topics.
-- When the user wants ideas or names a plant/category, ALWAYS call the \`suggest_plants\` tool with 3-6 specific real plants. Don't list plants in plain text.
-- When the user wants you to actually plant something, call \`propose_placement\` using the bed information from the GARDEN CONTEXT below. Pick coordinates only from the listed FREE cells. Never overlap existing plants.
+- You may ONLY recommend plants from the CATALOG below. Never invent plants, never use slugs that aren't in the CATALOG.
+- When the user wants ideas or names a plant/category, ALWAYS call the \`suggest_plants\` tool with 3-6 slugs from the CATALOG. Don't list plants in plain text.
+- If the catalog has nothing relevant for the user's request, say so plainly in 1 sentence — do NOT make up plants.
+- When the user wants you to actually plant something, call \`propose_placement\` using the bed information from the GARDEN CONTEXT. Pick coordinates only from the listed FREE cells. Never overlap existing plants.
 - Keep chat replies short (1-3 sentences). The plant cards / placement proposals do most of the talking.
-- Use the user's language (English, Dutch, etc.).
-- When calling \`suggest_plants\`, ALWAYS include realistic growing details for each plant: days_to_harvest_min/max, harvest_season, sun, water, planting_depth_cm, companions (2-4), avoid (0-2). Use temperate-climate norms when uncertain.
-- Never invent fake plants. If you're not sure something is a real garden plant, don't include it.`;
+- Use the user's language (English, Dutch, etc.).`;
 
 const COORDINATE_RULES = `
 
@@ -133,103 +97,67 @@ COORDINATES (CRITICAL):
 
 const FULL_SYSTEM_PROMPT = SYSTEM_PROMPT + COORDINATE_RULES;
 
-async function handleSuggestPlants(
-  admin: ReturnType<typeof createClient>,
-  supabaseUrl: string,
-  args: { query: string; plants: Array<{
-    common_name: string;
-    scientific_name?: string;
-    category: string;
-    season: string[];
-    spacing: number;
-    description?: string;
-    days_to_harvest_min?: number;
-    days_to_harvest_max?: number;
-    harvest_season?: string[];
-    sun?: string;
-    water?: string;
-    planting_depth_cm?: number;
-    companions?: string[];
-    avoid?: string[];
-  }> }
-) {
-  const results: Array<{
-    slug: string;
-    common_name: string;
-    scientific_name: string | null;
-    category: string;
-    season: string[];
-    spacing: number;
-    description: string | null;
-    image_url: string | null;
-  }> = [];
+type CatalogRow = {
+  slug: string;
+  common_name: string;
+  scientific_name: string | null;
+  category: string;
+  season: string[];
+  harvest_season: string[];
+  spacing: number;
+  sun: string | null;
+  water: string | null;
+  description: string | null;
+  image_url: string | null;
+  days_to_harvest_min: number | null;
+  days_to_harvest_max: number | null;
+  planting_depth_cm: number | null;
+  companions: string[];
+  avoid: string[];
+};
 
-  for (const p of args.plants.slice(0, 6)) {
-    const slug = slugify(p.common_name);
-    if (!slug) continue;
-
-    // Try existing
-    const { data: existing } = await admin
-      .from("plant_catalog")
-      .select("*")
-      .eq("slug", slug)
-      .maybeSingle();
-
-    if (existing && existing.image_url) {
-      results.push(existing as any);
-      continue;
-    }
-
-    // Generate icon (or reuse cached file)
-    let imageUrl: string | null = null;
-    try {
-      const iconRes = await fetch(`${supabaseUrl}/functions/v1/generate-plant-icon`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-        },
-        body: JSON.stringify({ name: p.common_name }),
-      });
-      if (iconRes.ok) {
-        const j = await iconRes.json();
-        imageUrl = j.image_url ?? null;
-      } else {
-        console.error("icon gen failed", await iconRes.text());
-      }
-    } catch (e) {
-      console.error("icon fetch error", e);
-    }
-
-    const row = {
-      slug,
-      common_name: p.common_name,
-      scientific_name: p.scientific_name ?? null,
-      category: p.category,
-      season: p.season ?? [],
-      spacing: Math.min(Math.max(p.spacing ?? 1, 1), 4),
-      description: p.description ?? null,
-      image_url: imageUrl,
-      days_to_harvest_min: p.days_to_harvest_min ?? null,
-      days_to_harvest_max: p.days_to_harvest_max ?? null,
-      harvest_season: p.harvest_season ?? [],
-      sun: p.sun ?? null,
-      water: p.water ?? null,
-      planting_depth_cm: p.planting_depth_cm ?? null,
-      companions: p.companions ?? [],
-      avoid: p.avoid ?? [],
-    };
-
-    const { data: upserted } = await admin
-      .from("plant_catalog")
-      .upsert(row, { onConflict: "slug" })
-      .select("*")
-      .maybeSingle();
-
-    results.push((upserted ?? row) as any);
+async function loadCatalog(
+  admin: ReturnType<typeof createClient>
+): Promise<CatalogRow[]> {
+  const { data, error } = await admin
+    .from("plant_catalog")
+    .select(
+      "slug, common_name, scientific_name, category, season, harvest_season, spacing, sun, water, description, image_url, days_to_harvest_min, days_to_harvest_max, planting_depth_cm, companions, avoid"
+    )
+    .order("common_name");
+  if (error) {
+    console.error("loadCatalog error", error);
+    return [];
   }
+  return (data ?? []) as CatalogRow[];
+}
 
-  return { plants: results };
+function summarizeCatalog(catalog: CatalogRow[]): string {
+  // Compact one-line summary per plant so the model can pick by slug.
+  return catalog
+    .map(
+      (p) =>
+        `- ${p.slug} | ${p.common_name} (${p.category}) — sun:${p.sun ?? "?"}, water:${p.water ?? "?"}, season:${(p.season ?? []).join("/") || "?"}, spacing:${p.spacing}`
+    )
+    .join("\n");
+}
+
+function handleSuggestPlants(
+  catalog: CatalogRow[],
+  args: { query?: string; slugs?: unknown }
+) {
+  const wanted = Array.isArray(args.slugs)
+    ? (args.slugs as unknown[]).filter((s): s is string => typeof s === "string").slice(0, 6)
+    : [];
+  const bySlug = new Map(catalog.map((p) => [p.slug, p]));
+  const plants = wanted
+    .map((slug) => bySlug.get(slug))
+    .filter((p): p is CatalogRow => !!p);
+  return {
+    query: typeof args.query === "string" ? args.query : "",
+    plants,
+    rejected: wanted.filter((slug) => !bySlug.has(slug)),
+  };
 }
 
 Deno.serve(async (req) => {
@@ -251,10 +179,16 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
+    const catalog = await loadCatalog(admin);
+    const catalogBlock = catalog.length
+      ? `\n\nCATALOG (the only plants you may recommend — refer to them by slug):\n${summarizeCatalog(catalog)}`
+      : "\n\nCATALOG: (empty — tell the user no plants are available yet)";
+
     const contextMsg: ChatMsg = {
       role: "system",
       content:
         FULL_SYSTEM_PROMPT +
+        catalogBlock +
         (garden_context
           ? `\n\nGARDEN CONTEXT:\n${JSON.stringify(garden_context).slice(0, 4000)}`
           : ""),
@@ -327,7 +261,7 @@ Deno.serve(async (req) => {
 
         let result: unknown = { ok: true };
         if (tc.function.name === "suggest_plants") {
-          result = await handleSuggestPlants(admin, SUPABASE_URL, parsed);
+          result = handleSuggestPlants(catalog, parsed);
           toolOutputs[`suggest_plants:${tc.id}`] = result;
         } else if (tc.function.name === "propose_placement") {
           // Server-side validation: ensure no overlap with occupied cells
