@@ -347,6 +347,25 @@ export const BedManager: React.FC<BedManagerProps> = ({
                 />
               </div>
             ))}
+
+            {/* Garden entrance marker — between Bed 4 (top-right) and Bed 8 (bottom-right) */}
+            <div
+              className="absolute pointer-events-none flex flex-col items-center justify-center gap-3"
+              style={{ left: '1108px', top: '560px', width: '316px', height: '260px' }}
+              aria-label="Garden entrance"
+            >
+              {/* Top post */}
+              <div className="w-3 h-10 rounded-sm bg-garden-soil shadow-sm" />
+              {/* Dashed path between posts */}
+              <div className="flex-1 w-1 border-l-2 border-dashed border-garden-soil/70" />
+              {/* Label */}
+              <div className="px-3 py-1 rounded-full bg-background/90 border border-garden-soil/40 text-xs font-medium uppercase tracking-widest text-garden-soil shadow-sm">
+                Entrance
+              </div>
+              <div className="flex-1 w-1 border-l-2 border-dashed border-garden-soil/70" />
+              {/* Bottom post */}
+              <div className="w-3 h-10 rounded-sm bg-garden-soil shadow-sm" />
+            </div>
           </div>
         </div>
       </CardContent>
