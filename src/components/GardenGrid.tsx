@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Plant, PlantedCell } from '../types/garden';
 import { cn } from '../lib/utils';
+import { Plus } from 'lucide-react';
 
 interface GardenGridProps {
   width: number;
@@ -78,6 +79,12 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
                   className="w-12 h-12 object-cover rounded-sm pointer-events-none"
                 />
               </div>
+            )}
+            {!plantedCell && isHovered && (
+              <Plus
+                className="w-6 h-6 text-muted-foreground/60 pointer-events-none transition-opacity"
+                strokeWidth={2.5}
+              />
             )}
           </div>
         );
