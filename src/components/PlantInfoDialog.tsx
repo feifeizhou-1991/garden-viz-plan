@@ -32,6 +32,7 @@ import {
   Loader2,
   Heart,
   Ban,
+  Plus,
 } from 'lucide-react';
 
 type CatalogRow = {
@@ -50,6 +51,7 @@ type CatalogRow = {
   planting_depth_cm: number | null;
   companions: string[];
   avoid: string[];
+  image_url: string | null;
 };
 
 const ALL_SEASONS = ['Spring', 'Summer', 'Fall', 'Winter'] as const;
@@ -67,25 +69,39 @@ function fmtDate(d: Date): string {
 interface PlantInfoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  cell: PlantedCell | null;
+  /** When viewing a plant already placed on the grid. */
+  cell?: PlantedCell | null;
+  /** When viewing a plant from the catalog (no placement yet). */
+  catalogPlant?: {
+    slug: string;
+    common_name: string;
+    image_url?: string | null;
+    category?: string;
+  } | null;
   bedName?: string;
   planter?: Profile | null;
-  onRemove: () => void;
+  onRemove?: () => void;
+  /** Optional action when the dialog is shown for a catalog plant and there is a target cell. */
+  onPlace?: () => void;
+  placeLabel?: string;
 }
 
 export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
   open,
   onOpenChange,
   cell,
+  catalogPlant,
   bedName,
   planter,
   onRemove,
+  onPlace,
+  placeLabel = 'Place here',
 }) => {
   const [catalog, setCatalog] = useState<CatalogRow | null>(null);
   const [loadingCat, setLoadingCat] = useState(false);
 
   // The plant.id matches plant_catalog.slug for AI-curated plants
-  const slug = cell?.slug ?? cell?.plant.id;
+  const slug = cell?.slug ?? cell?.plant.id ?? catalogPlant?.slug;
 
   useEffect(() => {
     if (!open || !slug) {
@@ -110,8 +126,18 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
     };
   }, [open, slug]);
 
-  if (!cell) return null;
-  const { plant, plantedAt, plantedBy } = cell;
+  if (!cell && !catalogPlant) return null;
+
+  // Unify the display fields across the two modes
+  const displayName =
+    catalog?.common_name ?? cell?.plant.name ?? catalogPlant?.common_name ?? 'Plant';
+  const displayIcon = cell?.plant.icon ?? catalog?.image_url ?? catalogPlant?.image_url ?? '';
+  const displayCategory =
+    catalog?.category ?? cell?.plant.type ?? catalogPlant?.category ?? '';
+  const plantedAt = cell?.plantedAt;
+  const plantedBy = cell?.plantedBy;
+  const fallbackSeason = cell?.plant.season ?? [];
+  const fallbackSpacing = cell?.plant.spacing ?? 1;
 
   const planterLabel =
     planter?.display_name ||
@@ -151,12 +177,12 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle className="flex items-center gap-3">
             <img
-              src={plant.icon}
-              alt={plant.name}
+              src={displayIcon}
+              alt={displayName}
               className="w-14 h-14 object-cover rounded-md border"
             />
             <div className="flex flex-col items-start">
-              <span className="text-lg">{catalog?.common_name ?? plant.name}</span>
+              <span className="text-lg">{displayName}</span>
               {catalog?.scientific_name && (
                 <span className="text-xs italic text-muted-foreground font-normal">
                   {catalog.scientific_name}
@@ -165,7 +191,7 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
             </div>
           </DialogTitle>
           <DialogDescription className="capitalize">
-            {catalog?.category ?? plant.type}
+            {displayCategory}
           </DialogDescription>
         </DialogHeader>
 
@@ -173,7 +199,7 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
           <div className="px-6 py-4 space-y-5 text-sm">
             {/* Planting details */}
             <section className="space-y-2">
-              {bedName && (
+              {bedName && cell && (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Sprout className="w-4 h-4" />
                   <span>
@@ -181,16 +207,20 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">Planted by</span>
-                <span className="font-medium">{planterLabel}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span className="text-muted-foreground">On</span>
-                <span className="font-medium">{formattedDate}</span>
-              </div>
+              {cell && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Planted by</span>
+                    <span className="font-medium">{planterLabel}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">On</span>
+                    <span className="font-medium">{formattedDate}</span>
+                  </div>
+                </>
+              )}
             </section>
 
             {/* Description */}
@@ -300,8 +330,8 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
                     <div>
                       <div className="text-[10px] text-muted-foreground">Spacing</div>
                       <div className="font-medium text-xs">
-                        {catalog?.spacing ?? plant.spacing} cell
-                        {(catalog?.spacing ?? plant.spacing) > 1 ? 's' : ''}
+                        {catalog?.spacing ?? fallbackSpacing} cell
+                        {(catalog?.spacing ?? fallbackSpacing) > 1 ? 's' : ''}
                       </div>
                     </div>
                   </div>
@@ -344,22 +374,34 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
             ) : null}
 
             {/* Fallback for legacy plants without catalog row */}
-            {!catalog && !loadingCat && plant.season?.length ? (
+            {!catalog && !loadingCat && fallbackSeason.length ? (
               <div className="text-muted-foreground text-xs">
-                Season: <span className="text-foreground">{plant.season.join(', ')}</span>
+                Season: <span className="text-foreground">{fallbackSeason.join(', ')}</span>
               </div>
             ) : null}
           </div>
         </ScrollArea>
 
         <DialogFooter className="gap-2 sm:justify-between border-t px-6 py-3">
-          <Button variant="destructive" size="sm" onClick={onRemove}>
-            <Trash2 className="w-4 h-4 mr-2" />
-            Remove plant
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
+          {onRemove ? (
+            <Button variant="destructive" size="sm" onClick={onRemove}>
+              <Trash2 className="w-4 h-4 mr-2" />
+              Remove plant
+            </Button>
+          ) : (
+            <span />
+          )}
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+            {onPlace && (
+              <Button size="sm" onClick={onPlace}>
+                <Plus className="w-4 h-4 mr-1" />
+                {placeLabel}
+              </Button>
+            )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

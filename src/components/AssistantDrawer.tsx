@@ -9,6 +9,7 @@ import { Input } from './ui/input';
 import { Loader2, Sparkles, Check, X, Search, Leaf } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { PlantInfoDialog } from './PlantInfoDialog';
 
 type CatalogPlant = {
   slug: string;
@@ -115,6 +116,9 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
   const [aiLoading, setAiLoading] = useState(false);
   const aiThreadRef = useRef<HTMLDivElement>(null);
 
+  // Detail dialog
+  const [detailPlant, setDetailPlant] = useState<CatalogPlant | null>(null);
+
   // Load catalog on open
   useEffect(() => {
     if (!open || catalog.length > 0) return;
@@ -167,11 +171,17 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
   }, [catalog, activeCategory, search]);
 
   const handlePickPlant = (c: CatalogPlant) => {
+    setDetailPlant(c);
+  };
+
+  const handlePlaceFromDetail = () => {
+    if (!detailPlant) return;
     if (!targetCell) {
       toast.info('Click an empty cell first to place this plant.');
       return;
     }
-    onPlacePlant(targetCell.bedId, targetCell.x, targetCell.y, catalogToPlant(c));
+    onPlacePlant(targetCell.bedId, targetCell.x, targetCell.y, catalogToPlant(detailPlant));
+    setDetailPlant(null);
     onOpenChange(false);
   };
 
@@ -496,6 +506,13 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
           )}
         </div>
       </SheetContent>
+      <PlantInfoDialog
+        open={!!detailPlant}
+        onOpenChange={(o) => !o && setDetailPlant(null)}
+        catalogPlant={detailPlant}
+        onPlace={targetCell ? handlePlaceFromDetail : undefined}
+        placeLabel="Place in selected cell"
+      />
     </Sheet>
   );
 };
