@@ -5,6 +5,16 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Search, Loader2, Leaf } from 'lucide-react';
 
+// Curated local plants that should always appear (with our own icons)
+// even when Wikipedia has no thumbnail or buries the result.
+const CURATED_PLANTS: { name: string; iconUrl: string }[] = [
+  {
+    name: 'Creeping Thyme',
+    iconUrl:
+      'https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/creepingthyme.png',
+  },
+];
+
 interface PlantSelectorProps {
   selectedPlant: Plant | null;
   onSelectPlant: (plant: Plant | null) => void;
