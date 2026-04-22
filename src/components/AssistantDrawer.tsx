@@ -328,7 +328,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         </SheetHeader>
 
         {/* Category chips */}
-        <div className="border-b flex-shrink-0 py-3 px-4">
+        <div className="border-b flex-shrink-0 px-4 min-h-[76px] flex items-center">
           <div className="flex gap-1.5 flex-wrap items-center">
             {categories.map((cat) => (
               <button
@@ -340,7 +340,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
                   setMessages([]);
                 }}
                 className={cn(
-                  'px-3 py-1 rounded-full text-xs whitespace-nowrap border transition-colors',
+                  'px-3 py-1 rounded-full text-xs leading-none whitespace-nowrap border transition-colors',
                   activeCategory === cat
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-background text-muted-foreground border-border hover:bg-muted'
