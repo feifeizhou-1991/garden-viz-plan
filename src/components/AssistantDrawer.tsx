@@ -307,7 +307,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               placeholder="Search plants or ask the assistant…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 pr-24"
+              className="pl-10 pr-24 mr-8"
               disabled={aiLoading}
             />
             <Button
@@ -315,7 +315,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               size="sm"
               variant="secondary"
               disabled={aiLoading || !search.trim()}
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 gap-1"
+              className="absolute right-9 top-1/2 -translate-y-1/2 h-8 gap-1"
             >
               {aiLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -328,7 +328,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         </SheetHeader>
 
         {/* Category chips */}
-        <div className="border-b flex-shrink-0 px-4 min-h-[76px] flex items-center">
+        <div className="flex-shrink-0 px-4 min-h-[76px] flex items-center">
           <div className="flex gap-1.5 flex-wrap items-center">
             {categories.map((cat) => (
               <button
