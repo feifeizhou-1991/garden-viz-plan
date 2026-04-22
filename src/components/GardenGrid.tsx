@@ -191,7 +191,10 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
               selectedPlant && !plantedCell && !selectMode && "hover:bg-grid-hover",
               isSelected && "bg-primary/20 border-primary ring-2 ring-primary/40",
               selectMode && plantedCell && "opacity-60 cursor-not-allowed",
-              isSelectableEmpty && !isSelected && "hover:bg-primary/10"
+              isSelectableEmpty && !isSelected && "hover:bg-primary/10",
+              // Inside a merged region, hide the per-cell chrome so the
+              // group reads as one big slot.
+              isMerged && "border-transparent bg-transparent rounded-none"
             )}
             onClick={() => handleCellClick(x, y)}
             onMouseEnter={() => setHoveredCell({ x, y })}
@@ -205,7 +208,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
                 <img 
                   src={plantedCell.plant.icon} 
                   alt={plantedCell.plant.name} 
-                  className="w-12 h-12 object-cover rounded-sm pointer-events-none"
+                  className="w-12 h-12 object-cover rounded-lg pointer-events-none"
                 />
               </div>
             )}
