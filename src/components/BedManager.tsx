@@ -347,6 +347,13 @@ export const BedManager: React.FC<BedManagerProps> = ({
                       ? (x, y) => onPlantedCellClick(bed.id, x, y)
                       : undefined
                   }
+                  selectMode={selectMode}
+                  selectedCells={selectedCellsByBed?.[bed.id]}
+                  onToggleSelection={
+                    onToggleCellSelection
+                      ? (x, y) => onToggleCellSelection(bed.id, x, y)
+                      : undefined
+                  }
                 />
               </div>
             ))}
