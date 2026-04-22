@@ -191,7 +191,10 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
               selectedPlant && !plantedCell && !selectMode && "hover:bg-grid-hover",
               isSelected && "bg-primary/20 border-primary ring-2 ring-primary/40",
               selectMode && plantedCell && "opacity-60 cursor-not-allowed",
-              isSelectableEmpty && !isSelected && "hover:bg-primary/10"
+              isSelectableEmpty && !isSelected && "hover:bg-primary/10",
+              // Inside a merged region, hide the per-cell chrome so the
+              // group reads as one big slot.
+              isMerged && "border-transparent bg-transparent rounded-none"
             )}
             onClick={() => handleCellClick(x, y)}
             onMouseEnter={() => setHoveredCell({ x, y })}
@@ -205,7 +208,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
                 <img 
                   src={plantedCell.plant.icon} 
                   alt={plantedCell.plant.name} 
-                  className="w-12 h-12 object-cover rounded-sm pointer-events-none"
+                  className="w-12 h-12 object-cover rounded-lg pointer-events-none"
                 />
               </div>
             )}
@@ -251,7 +254,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
         return (
           <div
             key={`merged-${r.x}-${r.y}-${r.plantId}`}
-            className="absolute pointer-events-none flex items-center justify-center"
+            className="absolute pointer-events-none flex items-center justify-center bg-grid-occupied border border-grid-line rounded-lg overflow-hidden"
             style={{
               left: `${left}px`,
               top: `${top}px`,
@@ -263,7 +266,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
             <img
               src={r.plant.icon}
               alt={r.plant.name}
-              className="w-[85%] h-[85%] object-contain rounded-md drop-shadow"
+              className="w-full h-full object-cover rounded-lg"
             />
           </div>
         );
