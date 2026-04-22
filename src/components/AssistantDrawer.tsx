@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { supabase } from '@/integrations/supabase/client';
 import { Garden, GardenBed, Plant, PlantedCell } from '@/types/garden';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from './ui/sheet';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -285,7 +285,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">
+      <SheetContent side="right" showClose={false} className="w-full sm:max-w-md flex flex-col p-0">
         <SheetHeader className="px-4 pt-4 pb-3 border-b flex-shrink-0 space-y-3">
           <SheetDescription className="sr-only">
             {targetCell
@@ -293,12 +293,19 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               : 'Pick a plant or ask the assistant for ideas.'}
           </SheetDescription>
 
-          {/* Header row: title left, close icon (rendered by SheetContent) on the right at the same height */}
-          <div className="flex items-center justify-between h-4 pr-8">
+          <div className="flex items-center justify-between min-h-8 gap-3">
             <SheetTitle className="text-base font-semibold leading-none">Add plants</SheetTitle>
+            <SheetClose asChild>
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </SheetClose>
           </div>
 
-          {/* Search / Ask AI bar */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
