@@ -179,10 +179,16 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
+    const catalog = await loadCatalog(admin);
+    const catalogBlock = catalog.length
+      ? `\n\nCATALOG (the only plants you may recommend — refer to them by slug):\n${summarizeCatalog(catalog)}`
+      : "\n\nCATALOG: (empty — tell the user no plants are available yet)";
+
     const contextMsg: ChatMsg = {
       role: "system",
       content:
         FULL_SYSTEM_PROMPT +
+        catalogBlock +
         (garden_context
           ? `\n\nGARDEN CONTEXT:\n${JSON.stringify(garden_context).slice(0, 4000)}`
           : ""),
@@ -255,7 +261,7 @@ Deno.serve(async (req) => {
 
         let result: unknown = { ok: true };
         if (tc.function.name === "suggest_plants") {
-          result = await handleSuggestPlants(admin, SUPABASE_URL, parsed);
+          result = handleSuggestPlants(catalog, parsed);
           toolOutputs[`suggest_plants:${tc.id}`] = result;
         } else if (tc.function.name === "propose_placement") {
           // Server-side validation: ensure no overlap with occupied cells
