@@ -323,8 +323,16 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               onBack={() => setDetailPlant(null)}
               backLabel="Back to plants"
               onClose={() => onOpenChange(false)}
-              onPlace={targetCell ? handlePlaceFromDetail : undefined}
-              placeLabel="Place in selected cell"
+              onPlace={
+                (targetCells && targetCells.length > 0) || targetCell
+                  ? handlePlaceFromDetail
+                  : undefined
+              }
+              placeLabel={
+                targetCells && targetCells.length > 0
+                  ? `Place in ${targetCells.length} cell${targetCells.length > 1 ? 's' : ''}`
+                  : 'Place in selected cell'
+              }
               className="flex-1 min-h-0"
             />
           </>
@@ -332,13 +340,19 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         <>
         <SheetHeader className="px-[16px] pb-3 pt-0 my-0 border-b flex-shrink-0 space-y-3">
           <SheetDescription className="sr-only">
-            {targetCell
+            {targetCells && targetCells.length > 0
+              ? `Adding plant to ${targetCells.length} selected cells`
+              : targetCell
               ? `Filling ${garden.beds?.find((b) => b.id === targetCell.bedId)?.name ?? 'cell'} — row ${targetCell.y + 1}, col ${targetCell.x + 1}`
               : 'Pick a plant or ask the assistant for ideas.'}
           </SheetDescription>
 
           <div className="flex items-center justify-between min-h-8 gap-3">
-            <SheetTitle className="text-foreground font-semibold leading-none text-xl">Add plants</SheetTitle>
+            <SheetTitle className="text-foreground font-semibold leading-none text-xl">
+              {targetCells && targetCells.length > 0
+                ? `Add plant to ${targetCells.length} cells`
+                : 'Add plants'}
+            </SheetTitle>
             <SheetClose asChild>
               <button
                 type="button"
