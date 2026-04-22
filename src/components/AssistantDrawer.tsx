@@ -293,8 +293,8 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               : 'Pick a plant or ask the assistant for ideas.'}
           </SheetDescription>
 
-          <div className="h-8 flex items-center pr-10">
-            <SheetTitle className="text-base font-semibold">Add plants</SheetTitle>
+          <div className="flex items-center pr-10 -mt-1 mb-1">
+            <SheetTitle className="text-base font-semibold leading-none">Add plants</SheetTitle>
           </div>
 
           {/* Search / Ask AI bar */}
