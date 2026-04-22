@@ -370,22 +370,34 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
             ) : null}
 
             {/* Fallback for legacy plants without catalog row */}
-            {!catalog && !loadingCat && plant.season?.length ? (
+            {!catalog && !loadingCat && fallbackSeason.length ? (
               <div className="text-muted-foreground text-xs">
-                Season: <span className="text-foreground">{plant.season.join(', ')}</span>
+                Season: <span className="text-foreground">{fallbackSeason.join(', ')}</span>
               </div>
             ) : null}
           </div>
         </ScrollArea>
 
         <DialogFooter className="gap-2 sm:justify-between border-t px-6 py-3">
-          <Button variant="destructive" size="sm" onClick={onRemove}>
-            <Trash2 className="w-4 h-4 mr-2" />
-            Remove plant
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
+          {onRemove ? (
+            <Button variant="destructive" size="sm" onClick={onRemove}>
+              <Trash2 className="w-4 h-4 mr-2" />
+              Remove plant
+            </Button>
+          ) : (
+            <span />
+          )}
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+            {onPlace && (
+              <Button size="sm" onClick={onPlace}>
+                <Plus className="w-4 h-4 mr-1" />
+                {placeLabel}
+              </Button>
+            )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
