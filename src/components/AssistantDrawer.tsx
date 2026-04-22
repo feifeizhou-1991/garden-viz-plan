@@ -301,6 +301,23 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         onOpenAutoFocus={(e) => e.preventDefault()}
         className="w-full sm:max-w-md flex flex-col p-0 gap-0"
       >
+        {/* Sheet a11y title is always required; hide visually when showing detail. */}
+        {detailPlant ? (
+          <>
+            <SheetTitle className="sr-only">{detailPlant.common_name}</SheetTitle>
+            <SheetDescription className="sr-only">Plant details</SheetDescription>
+            <PlantInfoView
+              catalogPlant={detailPlant}
+              onBack={() => setDetailPlant(null)}
+              backLabel="Back to plants"
+              onClose={() => onOpenChange(false)}
+              onPlace={targetCell ? handlePlaceFromDetail : undefined}
+              placeLabel="Place in selected cell"
+              className="flex-1 min-h-0"
+            />
+          </>
+        ) : (
+        <>
         <SheetHeader className="px-[16px] pb-3 pt-0 my-0 border-b flex-shrink-0 space-y-3">
           <SheetDescription className="sr-only">
             {targetCell
@@ -505,14 +522,9 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
             </div>
           )}
         </div>
+        </>
+        )}
       </SheetContent>
-      <PlantInfoDialog
-        open={!!detailPlant}
-        onOpenChange={(o) => !o && setDetailPlant(null)}
-        catalogPlant={detailPlant}
-        onPlace={targetCell ? handlePlaceFromDetail : undefined}
-        placeLabel="Place in selected cell"
-      />
     </Sheet>
   );
 };
