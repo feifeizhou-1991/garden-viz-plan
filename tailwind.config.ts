@@ -63,6 +63,7 @@ export default {
           line: "hsl(var(--grid-line))",
           hover: "hsl(var(--plot-hover))",
           occupied: "hsl(var(--plot-occupied))",
+          merged: "hsl(var(--merged-outline))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
