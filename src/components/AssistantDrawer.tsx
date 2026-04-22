@@ -287,17 +287,12 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">
         <SheetHeader className="px-4 pt-4 pb-3 border-b flex-shrink-0">
-          <SheetTitle className="flex items-center gap-2">
-            <Leaf className="w-4 h-4 text-primary" />
-            Add plants
-          </SheetTitle>
-          {targetCell ? (
-            <SheetDescription>
-              Filling {garden.beds?.find((b) => b.id === targetCell.bedId)?.name ?? 'cell'} — row {targetCell.y + 1}, col {targetCell.x + 1}
-            </SheetDescription>
-          ) : (
-            <SheetDescription>Pick a plant or ask the assistant for ideas.</SheetDescription>
-          )}
+          <SheetTitle className="sr-only">Add plants</SheetTitle>
+          <SheetDescription className="sr-only">
+            {targetCell
+              ? `Filling ${garden.beds?.find((b) => b.id === targetCell.bedId)?.name ?? 'cell'} — row ${targetCell.y + 1}, col ${targetCell.x + 1}`
+              : 'Pick a plant or ask the assistant for ideas.'}
+          </SheetDescription>
 
           {/* Search / Ask AI bar */}
           <form
@@ -305,14 +300,14 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               e.preventDefault();
               askAI();
             }}
-            className="relative mt-2"
+            className="relative"
           >
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
             <Input
               placeholder="Search plants or ask the assistant…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-24"
+              className="pl-10 pr-24"
               disabled={aiLoading}
             />
             <Button
@@ -333,13 +328,17 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         </SheetHeader>
 
         {/* Category chips */}
-        <div className="px-4 pt-3 pb-2 border-b flex-shrink-0 overflow-x-auto">
-          <div className="flex gap-1.5 flex-nowrap">
+        <div className="px-4 py-2 border-b flex-shrink-0 overflow-x-auto flex items-center min-h-[44px]">
+          <div className="flex gap-1.5 flex-nowrap items-center">
             {categories.map((cat) => (
               <button
                 key={cat}
                 type="button"
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => {
+                  setActiveCategory(cat);
+                  setSearch('');
+                  setMessages([]);
+                }}
                 className={cn(
                   'px-3 py-1 rounded-full text-xs whitespace-nowrap border transition-colors',
                   activeCategory === cat
