@@ -85,7 +85,7 @@ const CommunityRules: React.FC = () => {
           <section className="space-y-2">
             <h2 className="text-2xl font-semibold">📅 Communication & Community</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Stay informed through our group chat, notice board, or meetings.</li>
+              <li>Stay informed through our group chat</li>
               <li>If you're unsure about something (harvesting, planting, helping), just ask!</li>
               <li>Be kind, inclusive, and respectful—this garden belongs to all of us.</li>
             </ul>
