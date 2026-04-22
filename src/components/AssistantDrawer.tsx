@@ -286,7 +286,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0">
-        <SheetHeader className="px-4 pt-4 pb-3 border-b flex-shrink-0">
+        <SheetHeader className="px-4 pt-12 pb-3 pr-14 border-b flex-shrink-0">
           <SheetTitle className="sr-only">Add plants</SheetTitle>
           <SheetDescription className="sr-only">
             {targetCell
@@ -300,7 +300,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               e.preventDefault();
               askAI();
             }}
-            className="relative mr-8"
+            className="relative"
           >
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
             <Input
