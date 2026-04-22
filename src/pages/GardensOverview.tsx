@@ -84,8 +84,10 @@ const GardensOverview: React.FC = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-foreground">🌿 Groene Kaap Community Garden</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Manage and plan your vegetable garden layouts
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Welcome to our shared garden space! This is a place for growing food, building community,
+            and enjoying nature together. To keep things running smoothly and ensure everyone feels
+            welcome, please follow these guidelines:
           </p>
           <div className="flex justify-center pt-2">
             <Link to="/community-rules">
