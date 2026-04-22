@@ -53,8 +53,8 @@
     --plot-hover: 150 30% 90%;
     --plot-occupied: 150 25% 75%;
 
-    /* Outline color for merged plant slots (C1E1C1 — pastel green) */
-    --merged-outline: 120 39% 82%;
+    /* Outline color for plant slots (#bed7c0 — pastel green) */
+    --merged-outline: 122 23% 79%;
 
     --radius: 0.5rem;
 
