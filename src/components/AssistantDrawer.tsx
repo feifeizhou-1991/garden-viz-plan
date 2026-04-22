@@ -294,7 +294,7 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
           </SheetDescription>
 
           <div className="flex items-center justify-between min-h-8 gap-3">
-            <SheetTitle className="text-base font-semibold leading-none">Add plants</SheetTitle>
+            <SheetTitle className="text-foreground font-semibold leading-none text-xl">Add plants</SheetTitle>
             <SheetClose asChild>
               <button
                 type="button"
