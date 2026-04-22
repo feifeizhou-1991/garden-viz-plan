@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Plant, PlantedCell } from '../types/garden';
 import { cn } from '../lib/utils';
-import { Plus } from 'lucide-react';
+import { Plus, Check } from 'lucide-react';
 
 interface GardenGridProps {
   width: number;
@@ -13,6 +13,9 @@ interface GardenGridProps {
   onMovePlant?: (fromX: number, fromY: number, toX: number, toY: number) => void;
   onEmptyCellClick?: (x: number, y: number) => void;
   onPlantedCellClick?: (x: number, y: number) => void;
+  selectMode?: boolean;
+  selectedCells?: Set<string>;
+  onToggleSelection?: (x: number, y: number) => void;
 }
 
 export const GardenGrid: React.FC<GardenGridProps> = ({
@@ -24,6 +27,9 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
   onRemoveCell,
   onEmptyCellClick,
   onPlantedCellClick,
+  selectMode = false,
+  selectedCells,
+  onToggleSelection,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
 
@@ -33,7 +39,15 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
 
   const handleCellClick = useCallback((x: number, y: number) => {
     const existingPlant = getPlantAtCell(x, y);
-    
+
+    if (selectMode) {
+      // In multi-select mode, only empty cells can be selected.
+      if (!existingPlant && onToggleSelection) {
+        onToggleSelection(x, y);
+      }
+      return;
+    }
+
     if (existingPlant) {
       if (onPlantedCellClick) {
         onPlantedCellClick(x, y);
@@ -45,7 +59,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
     } else if (onEmptyCellClick) {
       onEmptyCellClick(x, y);
     }
-  }, [selectedPlant, getPlantAtCell, onPlantCell, onRemoveCell, onEmptyCellClick, onPlantedCellClick]);
+  }, [selectMode, selectedPlant, getPlantAtCell, onPlantCell, onRemoveCell, onEmptyCellClick, onPlantedCellClick, onToggleSelection]);
 
   const renderGrid = () => {
     const cells = [];
@@ -54,15 +68,20 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
       for (let x = 0; x < width; x++) {
         const plantedCell = getPlantAtCell(x, y);
         const isHovered = hoveredCell?.x === x && hoveredCell?.y === y;
-        
+        const isSelected = selectMode && selectedCells?.has(`${x},${y}`);
+        const isSelectableEmpty = selectMode && !plantedCell;
+
         cells.push(
           <div
             key={`${x}-${y}`}
             className={cn(
               "w-16 h-16 border border-grid-line bg-card cursor-pointer transition-all duration-200 flex items-center justify-center text-3xl relative rounded-lg",
-              isHovered && !plantedCell && "bg-grid-hover",
+              isHovered && !plantedCell && !isSelected && "bg-grid-hover",
               plantedCell && "bg-grid-occupied",
-              selectedPlant && !plantedCell && "hover:bg-grid-hover"
+              selectedPlant && !plantedCell && !selectMode && "hover:bg-grid-hover",
+              isSelected && "bg-primary/20 border-primary ring-2 ring-primary/40",
+              selectMode && plantedCell && "opacity-60 cursor-not-allowed",
+              isSelectableEmpty && !isSelected && "hover:bg-primary/10"
             )}
             onClick={() => handleCellClick(x, y)}
             onMouseEnter={() => setHoveredCell({ x, y })}
@@ -80,11 +99,16 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
                 />
               </div>
             )}
-            {!plantedCell && isHovered && (
+            {!plantedCell && isHovered && !selectMode && (
               <Plus
                 className="w-6 h-6 text-muted-foreground/60 pointer-events-none transition-opacity"
                 strokeWidth={2.5}
               />
+            )}
+            {isSelected && (
+              <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow">
+                <Check className="w-3 h-3" strokeWidth={3} />
+              </div>
             )}
           </div>
         );

@@ -42,8 +42,12 @@ interface AssistantDrawerProps {
   garden: Garden;
   // The cell that triggered the drawer (optional — drawer can also be opened standalone)
   targetCell: { bedId: string; x: number; y: number } | null;
+  // Multiple target cells (multi-select mode). Takes precedence over targetCell when set.
+  targetCells?: { bedId: string; x: number; y: number }[] | null;
   onPlacePlant: (bedId: string, x: number, y: number, plant: Plant) => void;
   onApplyProposal: (bedId: string, items: { plant: Plant; x: number; y: number }[]) => void;
+  // Place a single plant into many cells at once (multi-select mode).
+  onPlacePlantInCells?: (cells: { bedId: string; x: number; y: number }[], plant: Plant) => void;
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -102,8 +106,10 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
   onOpenChange,
   garden,
   targetCell,
+  targetCells,
   onPlacePlant,
   onApplyProposal,
+  onPlacePlantInCells,
 }) => {
   // Catalog state
   const [catalog, setCatalog] = useState<CatalogPlant[]>([]);
@@ -176,6 +182,12 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
 
   const handlePlaceFromDetail = () => {
     if (!detailPlant) return;
+    if (targetCells && targetCells.length > 0 && onPlacePlantInCells) {
+      onPlacePlantInCells(targetCells, catalogToPlant(detailPlant));
+      setDetailPlant(null);
+      onOpenChange(false);
+      return;
+    }
     if (!targetCell) {
       toast.info('Click an empty cell first to place this plant.');
       return;
@@ -311,8 +323,16 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
               onBack={() => setDetailPlant(null)}
               backLabel="Back to plants"
               onClose={() => onOpenChange(false)}
-              onPlace={targetCell ? handlePlaceFromDetail : undefined}
-              placeLabel="Place in selected cell"
+              onPlace={
+                (targetCells && targetCells.length > 0) || targetCell
+                  ? handlePlaceFromDetail
+                  : undefined
+              }
+              placeLabel={
+                targetCells && targetCells.length > 0
+                  ? `Place in ${targetCells.length} cell${targetCells.length > 1 ? 's' : ''}`
+                  : 'Place in selected cell'
+              }
               className="flex-1 min-h-0"
             />
           </>
@@ -320,13 +340,19 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
         <>
         <SheetHeader className="px-[16px] pb-3 pt-0 my-0 border-b flex-shrink-0 space-y-3">
           <SheetDescription className="sr-only">
-            {targetCell
+            {targetCells && targetCells.length > 0
+              ? `Adding plant to ${targetCells.length} selected cells`
+              : targetCell
               ? `Filling ${garden.beds?.find((b) => b.id === targetCell.bedId)?.name ?? 'cell'} — row ${targetCell.y + 1}, col ${targetCell.x + 1}`
               : 'Pick a plant or ask the assistant for ideas.'}
           </SheetDescription>
 
           <div className="flex items-center justify-between min-h-8 gap-3">
-            <SheetTitle className="text-foreground font-semibold leading-none text-xl">Add plants</SheetTitle>
+            <SheetTitle className="text-foreground font-semibold leading-none text-xl">
+              {targetCells && targetCells.length > 0
+                ? `Add plant to ${targetCells.length} cells`
+                : 'Add plants'}
+            </SheetTitle>
             <SheetClose asChild>
               <button
                 type="button"
