@@ -32,6 +32,7 @@ import {
   Loader2,
   Heart,
   Ban,
+  Plus,
 } from 'lucide-react';
 
 type CatalogRow = {
@@ -67,25 +68,39 @@ function fmtDate(d: Date): string {
 interface PlantInfoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  cell: PlantedCell | null;
+  /** When viewing a plant already placed on the grid. */
+  cell?: PlantedCell | null;
+  /** When viewing a plant from the catalog (no placement yet). */
+  catalogPlant?: {
+    slug: string;
+    common_name: string;
+    image_url?: string | null;
+    category?: string;
+  } | null;
   bedName?: string;
   planter?: Profile | null;
-  onRemove: () => void;
+  onRemove?: () => void;
+  /** Optional action when the dialog is shown for a catalog plant and there is a target cell. */
+  onPlace?: () => void;
+  placeLabel?: string;
 }
 
 export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
   open,
   onOpenChange,
   cell,
+  catalogPlant,
   bedName,
   planter,
   onRemove,
+  onPlace,
+  placeLabel = 'Place here',
 }) => {
   const [catalog, setCatalog] = useState<CatalogRow | null>(null);
   const [loadingCat, setLoadingCat] = useState(false);
 
   // The plant.id matches plant_catalog.slug for AI-curated plants
-  const slug = cell?.slug ?? cell?.plant.id;
+  const slug = cell?.slug ?? cell?.plant.id ?? catalogPlant?.slug;
 
   useEffect(() => {
     if (!open || !slug) {
@@ -110,8 +125,18 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
     };
   }, [open, slug]);
 
-  if (!cell) return null;
-  const { plant, plantedAt, plantedBy } = cell;
+  if (!cell && !catalogPlant) return null;
+
+  // Unify the display fields across the two modes
+  const displayName =
+    catalog?.common_name ?? cell?.plant.name ?? catalogPlant?.common_name ?? 'Plant';
+  const displayIcon = cell?.plant.icon ?? catalog?.image_url ?? catalogPlant?.image_url ?? '';
+  const displayCategory =
+    catalog?.category ?? cell?.plant.type ?? catalogPlant?.category ?? '';
+  const plantedAt = cell?.plantedAt;
+  const plantedBy = cell?.plantedBy;
+  const fallbackSeason = cell?.plant.season ?? [];
+  const fallbackSpacing = cell?.plant.spacing ?? 1;
 
   const planterLabel =
     planter?.display_name ||
