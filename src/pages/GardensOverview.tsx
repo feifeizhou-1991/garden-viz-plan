@@ -91,7 +91,7 @@ const GardensOverview: React.FC = () => {
             <Link to="/community-rules">
               <Button variant="default" size="sm">
                 <BookOpen className="w-4 h-4" />
-                Community rules
+                Community Guidelines
               </Button>
             </Link>
           </div>
