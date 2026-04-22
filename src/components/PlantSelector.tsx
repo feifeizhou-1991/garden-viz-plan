@@ -89,6 +89,26 @@ function wikiResultToPlant(r: WikiResult): Plant {
   };
 }
 
+// Build a stable pseudo pageId for curated entries so selection state still works.
+function curatedPageId(name: string): number {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  // Negative ids to avoid colliding with real Wikipedia pageids
+  return -Math.abs(h) - 1;
+}
+
+function getCuratedMatches(term: string): WikiResult[] {
+  const t = term.trim().toLowerCase();
+  if (!t) return [];
+  return CURATED_PLANTS
+    .filter((p) => p.name.toLowerCase().includes(t))
+    .map((p) => ({
+      pageId: curatedPageId(p.name),
+      title: p.name,
+      thumbnail: p.iconUrl,
+    }));
+}
+
 export const PlantSelector: React.FC<PlantSelectorProps> = ({
   selectedPlant,
   onSelectPlant,
