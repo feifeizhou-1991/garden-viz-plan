@@ -22,12 +22,6 @@ const CommunityRules: React.FC = () => {
         </header>
 
         <article className="prose prose-neutral dark:prose-invert max-w-none space-y-8 text-foreground">
-          <p className="text-base leading-relaxed">
-            Welcome to our shared garden space! This is a place for growing food, building community,
-            and enjoying nature together. To keep things running smoothly and ensure everyone feels
-            welcome, please follow these guidelines:
-          </p>
-
           <section className="space-y-2">
             <h2 className="text-2xl font-semibold">🌱 Respect the Space</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
