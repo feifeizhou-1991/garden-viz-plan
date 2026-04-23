@@ -87,6 +87,7 @@ export const PLANTS: Plant[] = [
   { id: 'lily', name: 'Lily', type: 'flower', color: 'bg-orange-400', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/lily.png`, spacing: 1, season: ['Summer'] },
   { id: 'iris', name: 'Iris', type: 'flower', color: 'bg-purple-600', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/iris.png`, spacing: 1, season: ['Spring', 'Summer'] },
   { id: 'echinacea', name: 'Echinacea', type: 'flower', color: 'bg-pink-500', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/echinacea.png`, spacing: 1, season: ['Summer', 'Fall'] },
+  { id: 'butterflybush', name: 'Butterfly Bush', type: 'flower', color: 'bg-purple-500', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/butterfly-bush.png`, spacing: 3, season: ['Summer', 'Fall'] },
 
   // ---------- Other garden plants ----------
   { id: 'aloe', name: 'Aloe Vera', type: 'other', color: 'bg-green-500', icon: `https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/aloe.png`, spacing: 1, season: ['Spring', 'Summer', 'Fall', 'Winter'] },
