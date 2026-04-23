@@ -31,21 +31,27 @@ const CommunityRules: React.FC = () => {
           <section className="space-y-2">
             <h2 className="text-2xl font-semibold">🌿 Shared Plants & Herbs</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Feel free to harvest from shared herbs and plants, but take only what you need.</li>
+              <li>Feel free to harvest, but only take what you need.</li>
               <li>Be mindful of others—leave enough for everyone to enjoy.</li>
               <li>
-                If you harvest regularly, consider contributing by helping maintain these plants
-                (watering, pruning, replanting).
+                If you harvest more regularly, consider contributing by helping maintain the
+                garden.
               </li>
             </ul>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-2xl font-semibold">🥕 Personal Plots</h2>
+            <h2 className="text-2xl font-semibold">🥕 How to join</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Respect clearly marked personal plots—do not harvest from them without permission.</li>
-              <li>If you have your own plot, keep it maintained (weeded, watered, and tidy).</li>
-              <li>Label your plants if possible to avoid confusion.</li>
+              <li>
+                Just let us know in the group chat "Groene vingers" in De Groene Kaap how you want to
+                participate.
+              </li>
+              <li>Participation can be planting, giving water, maintenance, decorating, pruning etc.</li>
+              <li>
+                There are no obligations or fee for joining, but help however and when you can.
+                There is always something to do in the garden!
+              </li>
             </ul>
           </section>
 
