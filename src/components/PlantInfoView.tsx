@@ -79,12 +79,13 @@ export interface PlantInfoViewProps {
   } | null;
   bedName?: string;
   planter?: Profile | null;
+  assignee?: Profile | null;
   /** Show a "Back" affordance in the header (used inline in panels). */
   onBack?: () => void;
   backLabel?: string;
   /** Called when user removes the placed plant. */
   onRemove?: () => void;
-  /** Called when user reassigns the planter to a different gardener. */
+  /** Called when user assigns the plant to a gardener (separate from planter). */
   onReassign?: (userId: string) => void;
   /** Called when the dialog/host should close (used by header X / Close). */
   onClose?: () => void;
@@ -99,6 +100,7 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
   catalogPlant,
   bedName,
   planter,
+  assignee,
   onBack,
   backLabel = 'Back',
   onRemove,
