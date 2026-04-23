@@ -32,7 +32,7 @@ const PlantAvatarStack: React.FC<{ garden: Garden }> = ({ garden }) => {
       {visible.map((p, i) => (
         <div
           key={`${p.name}-${i}`}
-          className="w-7 h-7 rounded-full bg-card border-2 border-background ring-1 ring-border overflow-hidden flex items-center justify-center -ml-2 first:ml-0 shadow-sm"
+          className="w-14 h-14 rounded-full bg-card border-2 border-background ring-1 ring-border overflow-hidden flex items-center justify-center -ml-4 first:ml-0 shadow-sm"
           title={p.name}
         >
           {p.icon ? (
@@ -43,14 +43,14 @@ const PlantAvatarStack: React.FC<{ garden: Garden }> = ({ garden }) => {
               loading="lazy"
             />
           ) : (
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               {p.name.slice(0, 1)}
             </span>
           )}
         </div>
       ))}
       {extra > 0 && (
-        <div className="w-7 h-7 rounded-full bg-muted border-2 border-background ring-1 ring-border flex items-center justify-center -ml-2 text-[10px] font-medium text-muted-foreground shadow-sm">
+        <div className="w-14 h-14 rounded-full bg-muted border-2 border-background ring-1 ring-border flex items-center justify-center -ml-4 text-sm font-medium text-muted-foreground shadow-sm">
           +{extra}
         </div>
       )}
