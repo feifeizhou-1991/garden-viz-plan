@@ -388,6 +388,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
         cell={infoPlantedCell}
         bedName={infoBed?.name}
         planter={infoPlanter}
+        assignee={infoAssignee}
         onRemove={removeInfoPlant}
         onReassign={reassignInfoPlanter}
       />
