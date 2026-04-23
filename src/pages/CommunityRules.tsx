@@ -16,9 +16,6 @@ const CommunityRules: React.FC = () => {
 
         <header className="space-y-3 text-center">
           <h1 className="text-4xl font-bold text-foreground">Community Guidelines</h1>
-          <p className="text-lg text-muted-foreground">
-            For our neighbourhood vegetable garden
-          </p>
         </header>
 
         <article className="prose prose-neutral dark:prose-invert max-w-none space-y-8 text-foreground">
