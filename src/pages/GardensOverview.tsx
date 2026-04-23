@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Plus, Calendar, Grid3x3, Trash2, LogOut } from 'lucide-react';
+import { Plus, Calendar, Grid3x3, Trash2, LogOut, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -122,7 +122,13 @@ const GardensOverview: React.FC = () => {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-20">
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Link to="/community-rules">
+            <Button variant="outline" size="sm">
+              <BookOpen className="w-4 h-4" />
+              Community Guidelines
+            </Button>
+          </Link>
           <Button variant="outline" size="sm" onClick={handleSignOut}>
             <LogOut className="w-4 h-4" />
             Sign out
