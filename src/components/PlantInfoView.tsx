@@ -156,6 +156,11 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
     planter?.display_name ||
     planter?.email ||
     (plantedBy ? 'Unknown gardener' : 'Not recorded');
+  const assignedTo = cell?.assignedTo;
+  const assigneeLabel =
+    assignee?.display_name ||
+    assignee?.email ||
+    (assignedTo ? 'Unknown gardener' : 'Unassigned');
 
   const plantedDate = plantedAt ? new Date(plantedAt) : null;
   const formattedDate = plantedDate ? fmtDate(plantedDate) : 'Not recorded';
