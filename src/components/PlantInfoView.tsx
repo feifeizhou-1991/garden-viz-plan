@@ -1,10 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { PlantedCell } from '@/types/garden';
-import { Profile } from '@/hooks/useProfiles';
+import { Profile, useProfiles } from '@/hooks/useProfiles';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from './ui/button';
 import { Table, TableBody, TableCell, TableRow } from './ui/table';
 import { Badge } from './ui/badge';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from './ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from './ui/command';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
   Trash2,
   User,
@@ -18,6 +32,8 @@ import {
   Ban,
   Plus,
   ArrowLeft,
+  UserCog,
+  Check,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
