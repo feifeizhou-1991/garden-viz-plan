@@ -235,7 +235,12 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
               <User className="w-4 h-4 text-muted-foreground" />
               <span className="text-muted-foreground">Planted by</span>
               <span className="font-medium">{planterLabel}</span>
-              {onReassign && (
+            </div>
+            {onReassign && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <UserCog className="w-4 h-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Assigned to</span>
+                <span className="font-medium">{assigneeLabel}</span>
                 <Popover open={assignOpen} onOpenChange={setAssignOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -244,7 +249,7 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
                       className="h-6 px-2 text-xs gap-1 text-muted-foreground hover:text-foreground"
                     >
                       <UserCog className="w-3.5 h-3.5" />
-                      Assign
+                      {assignedTo ? 'Change' : 'Assign'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-64" align="start">
@@ -261,7 +266,7 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
                             )
                             .map((p) => {
                               const label = p.display_name || p.email || 'Unknown';
-                              const isCurrent = p.user_id === plantedBy;
+                              const isCurrent = p.user_id === assignedTo;
                               return (
                                 <CommandItem
                                   key={p.user_id}
@@ -290,8 +295,8 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
                     </Command>
                   </PopoverContent>
                 </Popover>
-              )}
-            </div>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-muted-foreground" />
               <span className="text-muted-foreground">On</span>
