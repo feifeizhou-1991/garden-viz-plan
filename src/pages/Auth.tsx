@@ -10,6 +10,8 @@ import { lovable } from '@/integrations/lovable';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { BookOpen } from 'lucide-react';
 
 const credentialsSchema = z.object({
   email: z.string().trim().email({ message: 'Invalid email address' }).max(255),
@@ -73,11 +75,26 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 gap-8">
+      <div className="text-center space-y-4 max-w-2xl">
+        <h1 className="text-4xl font-bold text-foreground">🌿 Groene Kaap Community Garden</h1>
+        <p className="text-lg text-muted-foreground leading-relaxed">
+          Welcome to our shared garden space! This is a place for growing food, building community,
+          and enjoying nature together. To keep things running smoothly and ensure everyone feels
+          welcome, please follow our community guidelines.
+        </p>
+        <div className="flex justify-center pt-2">
+          <Link to="/community-rules">
+            <Button variant="default" size="sm">
+              <BookOpen className="w-4 h-4" />
+              Community Guidelines
+            </Button>
+          </Link>
+        </div>
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
-          <div className="text-4xl">🌿</div>
-          <CardTitle className="text-2xl">Groene Kaap Community Garden</CardTitle>
+          <CardTitle className="text-2xl">Sign in</CardTitle>
           <CardDescription>Sign in to plan and manage your gardens</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Plus, Calendar, Grid3x3, Trash2, LogOut, BookOpen } from 'lucide-react';
+import { Plus, Calendar, Grid3x3, Trash2, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -130,20 +130,10 @@ const GardensOverview: React.FC = () => {
         </div>
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-foreground">🌿 Groene Kaap Community Garden</h1>
+          <h1 className="text-4xl font-bold text-foreground">🌿 Your Gardens</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Welcome to our shared garden space! This is a place for growing food, building community,
-            and enjoying nature together. To keep things running smoothly and ensure everyone feels
-            welcome, please follow our community guidelines.
+            Plan and manage your garden beds and plants.
           </p>
-          <div className="flex justify-center pt-2">
-            <Link to="/community-rules">
-              <Button variant="default" size="sm">
-                <BookOpen className="w-4 h-4" />
-                Community Guidelines
-              </Button>
-            </Link>
-          </div>
         </div>
 
         {/* Timeline */}

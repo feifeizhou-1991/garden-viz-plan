@@ -21,9 +21,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
+          <Route path="/community-rules" element={<CommunityRules />} />
           <Route path="/" element={<ProtectedRoute><GardensOverview /></ProtectedRoute>} />
           <Route path="/garden/:id" element={<ProtectedRoute><GardenDetail /></ProtectedRoute>} />
-          <Route path="/community-rules" element={<ProtectedRoute><CommunityRules /></ProtectedRoute>} />
           <Route path="/tasks" element={<ProtectedRoute><UpcomingTasks /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
