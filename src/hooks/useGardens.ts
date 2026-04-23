@@ -189,6 +189,6 @@ export async function syncGardenBeds(garden: Garden) {
   // @ts-ignore
   const { error } = await supabase
     .from('garden_beds')
-    .upsert(rows, { onConflict: 'id' });
+    .upsert(rows as any, { onConflict: 'id' });
   if (error) throw error;
 }
