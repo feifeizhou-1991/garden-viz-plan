@@ -20,6 +20,11 @@ const UpcomingTasks: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [newTitle, setNewTitle] = useState('');
   const [adding, setAdding] = useState(false);
+  const lastGardenId =
+    typeof window !== 'undefined'
+      ? sessionStorage.getItem('lastGardenId')
+      : null;
+  const backTo = lastGardenId ? `/garden/${lastGardenId}` : '/';
 
   const load = async () => {
     const { data, error } = await (supabase as any)
@@ -104,8 +109,12 @@ const UpcomingTasks: React.FC = () => {
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
-          <Link to="/">
-            <Button variant="outline" size="icon" aria-label="Back to gardens">
+          <Link to={backTo}>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={lastGardenId ? 'Back to garden' : 'Back to gardens'}
+            >
               <ArrowLeft className="w-4 h-4" />
             </Button>
           </Link>
