@@ -72,15 +72,6 @@ const CommunityRules: React.FC = () => {
               <li>Be kind, inclusive, and respectful—this garden belongs to all of us.</li>
             </ul>
           </section>
-
-          <section className="space-y-2">
-            <h2 className="text-2xl font-semibold">🌻 Final Thought</h2>
-            <p className="text-muted-foreground">
-              This garden thrives because of shared care and goodwill. Whether you grow your own
-              vegetables, harvest a few herbs, or simply lend a hand, your contribution matters.
-            </p>
-            <p className="text-muted-foreground font-medium">Let's grow together 🌱</p>
-          </section>
         </article>
       </div>
     </div>
