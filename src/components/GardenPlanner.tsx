@@ -303,6 +303,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
     (p) => p.x === infoCell?.x && p.y === infoCell?.y
   ) || null;
   const infoPlanter = infoPlantedCell?.plantedBy ? profiles[infoPlantedCell.plantedBy] : null;
+  const infoAssignee = infoPlantedCell?.assignedTo
+    ? profiles[infoPlantedCell.assignedTo]
+    : null;
 
   const removeInfoPlant = useCallback(() => {
     if (!infoCell) return;
@@ -331,7 +334,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       const bed = beds.find((b) => b.id === infoCell.bedId);
       if (!bed) return;
       const newPlants = bed.plants.map((p) =>
-        p.x === infoCell.x && p.y === infoCell.y ? { ...p, plantedBy: userId } : p
+        p.x === infoCell.x && p.y === infoCell.y ? { ...p, assignedTo: userId } : p
       );
       const updatedBeds = beds.map((b) =>
         b.id === bed.id ? { ...b, plants: newPlants } : b
