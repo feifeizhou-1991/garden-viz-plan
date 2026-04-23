@@ -22,21 +22,20 @@ const CommunityRules: React.FC = () => {
           <section className="space-y-2">
             <h2 className="text-2xl font-semibold">🥕 How to join</h2>
             <p className="text-muted-foreground">
-              Just let us know in the group chat "Groene vingers" in De Groene Kaap how you want to
-              participate. Participation can be planting, giving water, maintenance, decorating,
-              pruning etc. There are no obligations or fee for joining, but help however and when
+              Just let us know in the group chat "Groene vingers" in De Groene Kaap how you would like to
+              participate. Participation can be planting, watering, maintenance, decorating,
+              pruning etc. There are no obligations or fees for joining, but help however and when
               you can. There is always something to do in the garden!
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-2xl font-semibold">🌿 Shared Plants & Herbs</h2>
+            <h2 className="text-2xl font-semibold">🌿 Shared plants</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Feel free to harvest, but only take what you need.</li>
-              <li>Be mindful of others—leave enough for everyone to enjoy.</li>
+              <li>Everything in the garden is shared.</li>
+              <li>Be mindful of others—leave enough for everyone to enjoy when harvesting.</li>
               <li>
-                If you harvest more regularly, consider contributing by helping maintain the
-                garden.
+                If you want to harvest, please contribute actively by helping maintain the garden.
               </li>
             </ul>
           </section>
@@ -62,7 +61,7 @@ const CommunityRules: React.FC = () => {
           <section className="space-y-2">
             <h2 className="text-2xl font-semibold">📅 Communication & Community</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Stay informed through our group chat</li>
+              <li>Stay informed through our group chat.</li>
               <li>If you're unsure about something (harvesting, planting, helping), just ask!</li>
               <li>Be kind, inclusive, and respectful—this garden belongs to all of us.</li>
             </ul>
