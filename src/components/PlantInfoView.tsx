@@ -84,6 +84,8 @@ export interface PlantInfoViewProps {
   backLabel?: string;
   /** Called when user removes the placed plant. */
   onRemove?: () => void;
+  /** Called when user reassigns the planter to a different gardener. */
+  onReassign?: (userId: string) => void;
   /** Called when the dialog/host should close (used by header X / Close). */
   onClose?: () => void;
   /** Show a primary "Place here" button. */
@@ -100,6 +102,7 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
   onBack,
   backLabel = 'Back',
   onRemove,
+  onReassign,
   onClose,
   onPlace,
   placeLabel = 'Place here',
@@ -107,6 +110,8 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
 }) => {
   const [catalog, setCatalog] = useState<CatalogRow | null>(null);
   const [loadingCat, setLoadingCat] = useState(false);
+  const { profiles } = useProfiles();
+  const [assignOpen, setAssignOpen] = useState(false);
 
   const slug = cell?.slug ?? cell?.plant.id ?? catalogPlant?.slug;
 
