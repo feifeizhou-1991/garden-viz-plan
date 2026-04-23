@@ -11,6 +11,53 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useGardens, createGarden, renameGarden, deleteGarden as deleteGardenApi } from '@/hooks/useGardens';
 
+// Stack of overlapping plant avatars (unique plants in this garden)
+const PlantAvatarStack: React.FC<{ garden: Garden }> = ({ garden }) => {
+  const beds = garden.beds ?? [];
+  const seen = new Set<string>();
+  const unique: { name: string; icon: string }[] = [];
+  for (const bed of beds) {
+    for (const cell of bed.plants) {
+      const key = cell.slug || cell.plant.id || cell.plant.name;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      unique.push({ name: cell.plant.name, icon: cell.plant.icon });
+    }
+  }
+  if (unique.length === 0) return null;
+  const visible = unique.slice(0, 6);
+  const extra = unique.length - visible.length;
+  return (
+    <div className="flex items-center pt-2">
+      {visible.map((p, i) => (
+        <div
+          key={`${p.name}-${i}`}
+          className="w-7 h-7 rounded-full bg-card border-2 border-background ring-1 ring-border overflow-hidden flex items-center justify-center -ml-2 first:ml-0 shadow-sm"
+          title={p.name}
+        >
+          {p.icon ? (
+            <img
+              src={p.icon}
+              alt={p.name}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <span className="text-[10px] text-muted-foreground">
+              {p.name.slice(0, 1)}
+            </span>
+          )}
+        </div>
+      ))}
+      {extra > 0 && (
+        <div className="w-7 h-7 rounded-full bg-muted border-2 border-background ring-1 ring-border flex items-center justify-center -ml-2 text-[10px] font-medium text-muted-foreground shadow-sm">
+          +{extra}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const GardensOverview: React.FC = () => {
   const navigate = useNavigate();
   const { gardens, loading } = useGardens();
@@ -123,6 +170,7 @@ const GardensOverview: React.FC = () => {
                               <Calendar className="w-4 h-4" />
                               {garden.createdAt.toLocaleDateString()}
                             </CardDescription>
+                            <PlantAvatarStack garden={garden} />
                           </div>
                         </div>
                       </CardHeader>
