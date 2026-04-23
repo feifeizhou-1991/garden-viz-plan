@@ -34,6 +34,7 @@ import {
   ArrowLeft,
   UserCog,
   Check,
+  Pencil,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
