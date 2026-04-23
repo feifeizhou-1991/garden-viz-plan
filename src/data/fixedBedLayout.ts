@@ -19,9 +19,9 @@ export const FIXED_BED_LAYOUT: FixedBedTemplate[] = [
   { name: 'Bed 3', width: 3, height: 7, x: 776,  y: 40 },
   { name: 'Bed 4', width: 3, height: 6, x: 1108, y: 40 },
   // Bottom row — uniform 60px horizontal gap, bottom edges aligned to tallest (Bed 8)
-  { name: 'Bed 5', width: 2, height: 5, x: 40,   y: 1060 },
-  { name: 'Bed 6', width: 3, height: 6, x: 300,  y: 988  },
-  { name: 'Bed 7', width: 5, height: 6, x: 632,  y: 988  },
+  { name: 'Bed 5', width: 2, height: 7, x: 40,   y: 916 },
+  { name: 'Bed 6', width: 3, height: 7, x: 300,  y: 916 },
+  { name: 'Bed 7', width: 5, height: 7, x: 632,  y: 916 },
   { name: 'Bed 8', width: 3, height: 8, x: 1108, y: 844  },
 ];
 
