@@ -7,6 +7,7 @@ import GardensOverview from "./pages/GardensOverview";
 import GardenDetail from "./pages/GardenDetail";
 import Auth from "./pages/Auth";
 import CommunityRules from "./pages/CommunityRules";
+import UpcomingTasks from "./pages/UpcomingTasks";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/" element={<ProtectedRoute><GardensOverview /></ProtectedRoute>} />
           <Route path="/garden/:id" element={<ProtectedRoute><GardenDetail /></ProtectedRoute>} />
           <Route path="/community-rules" element={<ProtectedRoute><CommunityRules /></ProtectedRoute>} />
+          <Route path="/tasks" element={<ProtectedRoute><UpcomingTasks /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
