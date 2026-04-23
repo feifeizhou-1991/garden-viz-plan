@@ -17,6 +17,7 @@ interface PlantInfoDialogProps {
   bedName?: string;
   planter?: Profile | null;
   onRemove?: () => void;
+  onReassign?: (userId: string) => void;
   onPlace?: () => void;
   placeLabel?: string;
 }
@@ -29,6 +30,7 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
   bedName,
   planter,
   onRemove,
+  onReassign,
   onPlace,
   placeLabel,
 }) => {
@@ -44,6 +46,7 @@ export const PlantInfoDialog: React.FC<PlantInfoDialogProps> = ({
           bedName={bedName}
           planter={planter}
           onRemove={onRemove}
+          onReassign={onReassign}
           onPlace={onPlace}
           placeLabel={placeLabel}
           onClose={() => onOpenChange(false)}

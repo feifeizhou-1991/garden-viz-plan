@@ -324,6 +324,26 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
     setInfoCell(null);
   }, [infoCell, garden, handleUpdateGarden]);
 
+  const reassignInfoPlanter = useCallback(
+    (userId: string) => {
+      if (!infoCell) return;
+      const beds = garden.beds || [];
+      const bed = beds.find((b) => b.id === infoCell.bedId);
+      if (!bed) return;
+      const newPlants = bed.plants.map((p) =>
+        p.x === infoCell.x && p.y === infoCell.y ? { ...p, plantedBy: userId } : p
+      );
+      const updatedBeds = beds.map((b) =>
+        b.id === bed.id ? { ...b, plants: newPlants } : b
+      );
+      handleUpdateGarden({ ...garden, beds: updatedBeds });
+      const name =
+        profiles[userId]?.display_name || profiles[userId]?.email || 'gardener';
+      toast.success(`Assigned to ${name}`);
+    },
+    [infoCell, garden, handleUpdateGarden, profiles]
+  );
+
   return (
     <div className="h-[calc(100vh-12rem)]">
       <BedManager
@@ -366,6 +386,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
         bedName={infoBed?.name}
         planter={infoPlanter}
         onRemove={removeInfoPlant}
+        onReassign={reassignInfoPlanter}
       />
     </div>
   );
