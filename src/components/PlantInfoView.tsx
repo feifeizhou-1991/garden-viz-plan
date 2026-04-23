@@ -258,6 +258,24 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
                       <CommandList>
                         <CommandEmpty>No gardeners found.</CommandEmpty>
                         <CommandGroup>
+                          <CommandItem
+                            value="unassigned"
+                            onSelect={() => {
+                              onReassign('');
+                              setAssignOpen(false);
+                            }}
+                            className="flex items-center gap-2"
+                          >
+                            <Avatar className="w-6 h-6">
+                              <AvatarFallback className="text-[10px]">
+                                <Ban className="w-3 h-3" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="flex-1 truncate text-muted-foreground">
+                              Unassigned
+                            </span>
+                            {!assignedTo && <Check className="w-3.5 h-3.5 text-primary" />}
+                          </CommandItem>
                           {Object.values(profiles)
                             .sort((a, b) =>
                               (a.display_name || a.email || '').localeCompare(
