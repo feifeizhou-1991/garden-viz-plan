@@ -95,7 +95,6 @@ const Auth: React.FC = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <CardTitle className="text-2xl">Sign in</CardTitle>
-          <CardDescription>Sign in to plan and manage your gardens</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button onClick={handleGoogleSignIn} variant="outline" size="lg" className="w-full">
