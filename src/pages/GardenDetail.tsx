@@ -33,6 +33,9 @@ const GardenDetail: React.FC = () => {
   useEffect(() => {
     loadGarden();
     if (!id) return;
+    try {
+      sessionStorage.setItem('lastGardenId', id);
+    } catch {}
     const channel = supabase
       .channel(`garden-${id}`)
       .on(
