@@ -56,13 +56,22 @@ const UpcomingTasks: React.FC = () => {
     if (!title) return;
     setAdding(true);
     const { data: userData } = await supabase.auth.getUser();
-    const { error } = await (supabase as any)
+    const { data: inserted, error } = await (supabase as any)
       .from('tasks')
-      .insert({ title, created_by: userData.user?.id });
+      .insert({ title, created_by: userData.user?.id })
+      .select()
+      .single();
     setAdding(false);
     if (error) {
       toast.error('Failed to add task');
       return;
+    }
+    if (inserted) {
+      setTasks((prev) =>
+        prev.some((t) => t.id === (inserted as Task).id)
+          ? prev
+          : [inserted as Task, ...prev]
+      );
     }
     setNewTitle('');
   };
