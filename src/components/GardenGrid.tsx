@@ -189,7 +189,7 @@ export const GardenGrid: React.FC<GardenGridProps> = ({
               plantedCell && "bg-grid-occupied border-grid-merged",
               isSelected && "bg-primary/20 border-primary ring-2 ring-primary/40",
               selectMode && plantedCell && "opacity-60 cursor-not-allowed",
-              isSelectableEmpty && !isSelected && "hover:bg-primary/10",
+              isSelectableEmpty && !isSelected && "hover:bg-white",
               // Inside a merged region, hide the per-cell chrome so the
               // group reads as one big slot.
               isMerged && "border-transparent bg-transparent rounded-none"
