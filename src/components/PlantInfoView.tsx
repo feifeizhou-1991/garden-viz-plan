@@ -34,6 +34,7 @@ import {
   ArrowLeft,
   UserCog,
   Check,
+  Pencil,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -245,11 +246,11 @@ export const PlantInfoView: React.FC<PlantInfoViewProps> = ({
                   <PopoverTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="sm"
-                      className="h-6 px-2 text-xs gap-1 text-muted-foreground hover:text-foreground"
+                      size="icon"
+                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                      aria-label={assignedTo ? 'Change assignee' : 'Assign gardener'}
                     >
-                      <UserCog className="w-3.5 h-3.5" />
-                      {assignedTo ? 'Change' : 'Assign'}
+                      <Pencil className="w-3.5 h-3.5" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-64" align="start">
