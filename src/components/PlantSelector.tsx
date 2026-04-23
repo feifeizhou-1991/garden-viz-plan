@@ -13,6 +13,11 @@ const CURATED_PLANTS: { name: string; iconUrl: string }[] = [
     iconUrl:
       'https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/creepingthyme.png',
   },
+  {
+    name: 'Laurel',
+    iconUrl:
+      'https://hlfdmeaeyxhegwprlrou.supabase.co/storage/v1/object/public/plant-icons/laurel.png',
+  },
 ];
 
 interface PlantSelectorProps {
