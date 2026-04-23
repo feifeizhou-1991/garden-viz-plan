@@ -14,6 +14,7 @@ export interface PlantedCell {
   plant: Plant;
   plantedBy?: string; // user id of the person who planted it
   plantedAt?: string; // ISO timestamp
+  assignedTo?: string; // user id of the gardener responsible for tending it
   slug?: string; // plant_catalog slug for fetching extra metadata
 }
 
