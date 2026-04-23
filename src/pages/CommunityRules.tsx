@@ -21,17 +21,12 @@ const CommunityRules: React.FC = () => {
         <article className="prose prose-neutral dark:prose-invert max-w-none space-y-8 text-foreground">
           <section className="space-y-2">
             <h2 className="text-2xl font-semibold">🥕 How to join</h2>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>
-                Just let us know in the group chat "Groene vingers" in De Groene Kaap how you want to
-                participate.
-              </li>
-              <li>Participation can be planting, giving water, maintenance, decorating, pruning etc.</li>
-              <li>
-                There are no obligations or fee for joining, but help however and when you can.
-                There is always something to do in the garden!
-              </li>
-            </ul>
+            <p className="text-muted-foreground">
+              Just let us know in the group chat "Groene vingers" in De Groene Kaap how you want to
+              participate. Participation can be planting, giving water, maintenance, decorating,
+              pruning etc. There are no obligations or fee for joining, but help however and when
+              you can. There is always something to do in the garden!
+            </p>
           </section>
 
           <section className="space-y-2">
