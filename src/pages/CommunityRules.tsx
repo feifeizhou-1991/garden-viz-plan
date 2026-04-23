@@ -56,18 +56,6 @@ const CommunityRules: React.FC = () => {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-2xl font-semibold">🤝 Helping Hands Welcome</h2>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>You don't need to have your own plot to be part of the garden!</li>
-              <li>
-                Volunteers are always appreciated for general tasks like watering, composting,
-                weeding, and repairs.
-              </li>
-              <li>Join group workdays or contribute whenever you can.</li>
-            </ul>
-          </section>
-
-          <section className="space-y-2">
             <h2 className="text-2xl font-semibold">💧 Water & Resources</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
               <li>Use water mindfully—especially during dry periods.</li>
