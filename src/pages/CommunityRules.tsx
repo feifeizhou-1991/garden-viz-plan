@@ -35,15 +35,6 @@ const CommunityRules: React.FC = () => {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-2xl font-semibold">🌱 Respect the Space</h2>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Treat the garden as a shared, community space.</li>
-              <li>Clean up after yourself and return tools to their proper place.</li>
-              <li>Be mindful of noise levels and nearby residents.</li>
-            </ul>
-          </section>
-
-          <section className="space-y-2">
             <h2 className="text-2xl font-semibold">🌿 Shared Plants & Herbs</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
               <li>Feel free to harvest, but only take what you need.</li>
@@ -52,6 +43,15 @@ const CommunityRules: React.FC = () => {
                 If you harvest more regularly, consider contributing by helping maintain the
                 garden.
               </li>
+            </ul>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-2xl font-semibold">🌱 Respect the Space</h2>
+            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+              <li>Treat the garden as a shared, community space.</li>
+              <li>Clean up after yourself and return tools to their proper place.</li>
+              <li>Be mindful of noise levels and nearby residents.</li>
             </ul>
           </section>
 
