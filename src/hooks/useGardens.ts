@@ -168,13 +168,12 @@ export async function ensureFixedLayout(garden: Garden): Promise<void> {
 
 /**
  * Sync the in-memory garden's beds to the database.
- * Strategy: replace all beds for this garden (delete + insert).
- * This keeps the client logic simple while staying consistent.
+ * Strategy: upsert each bed by id (no delete-all, to avoid races
+ * with ensureFixedLayout and realtime that previously caused
+ * duplicate beds and lost plants).
  */
 export async function syncGardenBeds(garden: Garden) {
   const beds: GardenBed[] = garden.beds || [];
-  // @ts-ignore
-  await supabase.from('garden_beds').delete().eq('garden_id', garden.id);
   if (beds.length === 0) return;
   const rows = beds.map((b) => ({
     id: b.id,
@@ -188,6 +187,8 @@ export async function syncGardenBeds(garden: Garden) {
     plants: b.plants as unknown as object,
   }));
   // @ts-ignore
-  const { error } = await supabase.from('garden_beds').insert(rows);
+  const { error } = await supabase
+    .from('garden_beds')
+    .upsert(rows as any, { onConflict: 'id' });
   if (error) throw error;
 }
