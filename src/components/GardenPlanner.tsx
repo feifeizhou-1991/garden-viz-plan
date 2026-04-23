@@ -334,15 +334,21 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       const bed = beds.find((b) => b.id === infoCell.bedId);
       if (!bed) return;
       const newPlants = bed.plants.map((p) =>
-        p.x === infoCell.x && p.y === infoCell.y ? { ...p, assignedTo: userId } : p
+        p.x === infoCell.x && p.y === infoCell.y
+          ? { ...p, assignedTo: userId || undefined }
+          : p
       );
       const updatedBeds = beds.map((b) =>
         b.id === bed.id ? { ...b, plants: newPlants } : b
       );
       handleUpdateGarden({ ...garden, beds: updatedBeds });
-      const name =
-        profiles[userId]?.display_name || profiles[userId]?.email || 'gardener';
-      toast.success(`Assigned to ${name}`);
+      if (!userId) {
+        toast.success('Assignment cleared');
+      } else {
+        const name =
+          profiles[userId]?.display_name || profiles[userId]?.email || 'gardener';
+        toast.success(`Assigned to ${name}`);
+      }
     },
     [infoCell, garden, handleUpdateGarden, profiles]
   );
