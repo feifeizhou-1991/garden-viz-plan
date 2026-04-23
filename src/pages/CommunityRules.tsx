@@ -50,7 +50,7 @@ const CommunityRules: React.FC = () => {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-2xl font-semibold">🌼 Sustainability First</h2>
+            <h2 className="text-2xl font-semibold">🌻 Sustainability First</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
               <li>Avoid chemical pesticides and fertilizers; opt for organic methods.</li>
               <li>Respect wildlife and pollinators—this is their space too.</li>
