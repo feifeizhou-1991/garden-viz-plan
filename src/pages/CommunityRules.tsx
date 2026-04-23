@@ -56,15 +56,6 @@ const CommunityRules: React.FC = () => {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-2xl font-semibold">💧 Water & Resources</h2>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-              <li>Use water mindfully—especially during dry periods.</li>
-              <li>Share tools and supplies fairly and report any damage.</li>
-              <li>If something runs out or breaks, let the group know.</li>
-            </ul>
-          </section>
-
-          <section className="space-y-2">
             <h2 className="text-2xl font-semibold">🌼 Sustainability First</h2>
             <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
               <li>Avoid chemical pesticides and fertilizers; opt for organic methods.</li>
