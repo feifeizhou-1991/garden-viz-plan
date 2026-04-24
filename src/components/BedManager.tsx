@@ -233,7 +233,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="flex-shrink-0">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={handleZoomOut}>
               <ZoomOut className="w-4 h-4" />
@@ -246,7 +246,7 @@ export const BedManager: React.FC<BedManagerProps> = ({
             </Button>
           </div>
           {onToggleSelectMode && (
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
               {selectMode && onAddPlantsToSelection && (
                 <Button
                   size="sm"
