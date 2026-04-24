@@ -80,7 +80,7 @@ const Auth: React.FC = () => {
         <div className="text-center lg:text-left space-y-4 max-w-2xl lg:max-w-xl w-full">
           <h1 className="text-4xl font-bold text-foreground">🌿 Groene Kaap Community Garden</h1>
           <div className="text-lg text-muted-foreground leading-relaxed space-y-2">
-            <p>Welcome to the online platform for the Community Garden on the rooftop of De Groene Kaap!</p>
+            <p>Welcome to the online platform for the Community Garden on the rooftop of De Groene Kaap! We use this tool for planning crops and communicating tasks.</p>
             <p>We love growing food, building community, and enjoying nature together. Residents of De Groene Kaap may join for free.</p>
             <p>Read the guidelines to know how it works.</p>
           </div>
