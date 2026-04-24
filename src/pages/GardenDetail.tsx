@@ -96,8 +96,7 @@ const GardenDetail: React.FC = () => {
               </Link>
               {/* Title shown inline on desktop */}
               <div className="hidden lg:flex items-center gap-4">
-                <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-                  <span>🌿</span>
+                <h1 className="text-3xl font-bold text-foreground">
                   {garden.name}
                 </h1>
                 <PlanterAvatars garden={garden} />
