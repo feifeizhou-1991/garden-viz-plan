@@ -4,6 +4,16 @@ import { Garden } from '../types/garden';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Plus, Calendar, Grid3x3, Trash2, LogOut, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
@@ -65,6 +75,7 @@ const GardensOverview: React.FC = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingGarden, setEditingGarden] = useState<Garden | null>(null);
   const [editName, setEditName] = useState('');
+  const [gardenToDelete, setGardenToDelete] = useState<Garden | null>(null);
 
   const handleCreateGarden = async () => {
     if (!newGardenName.trim()) {
@@ -106,6 +117,8 @@ const GardensOverview: React.FC = () => {
       toast.success(`Deleted garden "${garden.name}"`);
     } catch (e: any) {
       toast.error(e.message || 'Failed to delete garden');
+    } finally {
+      setGardenToDelete(null);
     }
   };
 
@@ -181,7 +194,7 @@ const GardensOverview: React.FC = () => {
                           className="h-8 w-8 p-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
                           onClick={(e) => {
                             e.preventDefault();
-                            handleDeleteGarden(garden);
+                            setGardenToDelete(garden);
                           }}
                         >
                           <Trash2 className="w-3 h-3" />
@@ -232,6 +245,28 @@ const GardensOverview: React.FC = () => {
           </ul>
         </div>
       </div>
+
+      <AlertDialog open={!!gardenToDelete} onOpenChange={(open) => !open && setGardenToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this garden?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {gardenToDelete
+                ? `"${gardenToDelete.name}" and all of its beds and plants will be permanently deleted. This action cannot be undone.`
+                : ''}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => gardenToDelete && handleDeleteGarden(gardenToDelete)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
