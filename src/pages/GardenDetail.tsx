@@ -86,36 +86,47 @@ const GardenDetail: React.FC = () => {
     <div className="min-h-screen bg-background p-4">
       <div className="w-full space-y-6">
         {/* Header with Navigation */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link to="/">
-              <Button variant="outline" size="icon" aria-label="Back to gardens">
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
-            </Link>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-                <span>🌿</span>
-                {garden.name}
-              </h1>
-              <PlanterAvatars garden={garden} />
+              <Link to="/">
+                <Button variant="outline" size="icon" aria-label="Back to gardens">
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+              </Link>
+              {/* Title shown inline on desktop */}
+              <div className="hidden lg:flex items-center gap-4">
+                <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                  <span>🌿</span>
+                  {garden.name}
+                </h1>
+                <PlanterAvatars garden={garden} />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link to="/tasks">
+                <Button variant="outline" className="gap-2" aria-label="Upcoming tasks">
+                  <ListChecks className="w-4 h-4" />
+                  <span className="hidden sm:inline">Upcoming tasks</span>
+                </Button>
+              </Link>
+              <Button
+                onClick={() => setAssistantOpen(true)}
+                className="gap-2"
+                aria-label="Plant Database"
+              >
+                <LeafyGreen className="w-4 h-4" />
+                <span className="hidden sm:inline">Plant Database</span>
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link to="/tasks">
-              <Button variant="outline" className="gap-2" aria-label="Upcoming tasks">
-                <ListChecks className="w-4 h-4" />
-                <span className="hidden sm:inline">Upcoming tasks</span>
-              </Button>
-            </Link>
-            <Button
-              onClick={() => setAssistantOpen(true)}
-              className="gap-2"
-              aria-label="Plant Database"
-            >
-              <LeafyGreen className="w-4 h-4" />
-              <span className="hidden sm:inline">Plant Database</span>
-            </Button>
+
+          {/* Title row on tablet and mobile - no icon, left-aligned below buttons */}
+          <div className="flex lg:hidden items-center gap-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+              {garden.name}
+            </h1>
+            <PlanterAvatars garden={garden} />
           </div>
         </div>
 
