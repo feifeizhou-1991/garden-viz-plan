@@ -10,7 +10,7 @@ const CommunityRules: React.FC = () => {
         <Link to="/">
           <Button variant="outline" size="sm">
             <ArrowLeft className="w-4 h-4" />
-            Back to gardens
+            Back
           </Button>
         </Link>
 
