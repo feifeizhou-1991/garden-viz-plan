@@ -75,24 +75,27 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 lg:p-12 items-center">
-      <div className="text-center lg:text-left space-y-4 max-w-2xl lg:max-w-xl lg:justify-self-end w-full">
-        <h1 className="text-4xl font-bold text-foreground">🌿 Groene Kaap Community Garden</h1>
-        <div className="text-lg text-muted-foreground leading-relaxed space-y-2">
-          <p>Welcome to the online platform for the Community Garden on the rooftop of De Groene Kaap!</p>
-          <p>We love growing food, building community, and enjoying nature together. Residents of De Groene Kaap may join for free.</p>
-          <p>Read the guidelines to know how it works.</p>
-        </div>
-        <div className="flex justify-center lg:justify-start pt-2">
-          <Link to="/community-rules">
-            <Button variant="default" size="sm">
-              <BookOpen className="w-4 h-4" />
-              Community Guidelines
-            </Button>
-          </Link>
+    <div className="min-h-screen bg-background grid grid-cols-1 lg:grid-cols-2 items-center">
+      <div className="bg-secondary/40 lg:min-h-screen flex items-center justify-center p-6 lg:p-12">
+        <div className="text-center lg:text-left space-y-4 max-w-2xl lg:max-w-xl w-full">
+          <h1 className="text-4xl font-bold text-foreground">🌿 Groene Kaap Community Garden</h1>
+          <div className="text-lg text-muted-foreground leading-relaxed space-y-2">
+            <p>Welcome to the online platform for the Community Garden on the rooftop of De Groene Kaap!</p>
+            <p>We love growing food, building community, and enjoying nature together. Residents of De Groene Kaap may join for free.</p>
+            <p>Read the guidelines to know how it works.</p>
+          </div>
+          <div className="flex justify-center lg:justify-start pt-2">
+            <Link to="/community-rules">
+              <Button variant="default" size="sm">
+                <BookOpen className="w-4 h-4" />
+                Community Guidelines
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
-      <Card className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-start">
+      <div className="flex items-center justify-center p-6 lg:p-12 w-full">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2 pb-2">
           <CardTitle className="text-2xl">Sign in to start planting</CardTitle>
         </CardHeader>
