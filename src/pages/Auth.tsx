@@ -96,7 +96,7 @@ const Auth: React.FC = () => {
       </div>
       <div className="flex items-center justify-center p-6 lg:p-12 w-full">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-2 pb-2">
+        <CardHeader className="text-center space-y-2 pb-4">
           <CardTitle className="text-2xl">Sign in to start planting</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
