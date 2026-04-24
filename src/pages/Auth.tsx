@@ -153,6 +153,7 @@ const Auth: React.FC = () => {
           </Tabs>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
