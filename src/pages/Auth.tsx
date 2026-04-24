@@ -76,7 +76,7 @@ const Auth: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background grid grid-cols-1 lg:grid-cols-2 items-center">
-      <div className="bg-secondary/40 lg:min-h-screen flex items-center justify-center p-6 lg:p-12">
+      <div className="bg-secondary/40 lg:min-h-screen flex items-center justify-center px-6 py-10 md:py-20 lg:p-12">
         <div className="text-center lg:text-left space-y-4 max-w-2xl lg:max-w-xl w-full">
           <h1 className="text-4xl font-bold text-foreground">🌿 Groene Kaap Community Garden</h1>
           <div className="text-lg text-muted-foreground leading-relaxed space-y-2">
